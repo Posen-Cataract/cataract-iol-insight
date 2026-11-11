@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cataract & IOL Insight 文獻庫</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: navy masthead (brand + author) → hero with search on home → topic cards; paper pages read as a one-column clinical summary sheet. */
+:root {
+  --navy: #0d2440;
+  --navy-2: #163458;
+  --accent: #0b7d8f;
+  --accent-soft: #e1f1f3;
+  --bg: #f3f6f9;
+  --surface: #ffffff;
+  --ink: #142538;
+  --muted: #5a6b7d;
+  --line: #d9e2ea;
+  --on-navy: #e8f1f8;
+  --on-navy-muted: #9fb6cc;
+  --gold: #c9a35a;
+  --danger: #b4423a;
+  --font-body: "IBM Plex Sans", "Noto Sans TC", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --navy: #0a1a2e; --navy-2: #122a47; --accent: #43b8c9; --accent-soft: #123640;
+    --bg: #0f1822; --surface: #16222f; --ink: #e4ecf3; --muted: #95a8ba; --line: #263749;
+    --danger: #e0786f; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --navy: #0a1a2e; --navy-2: #122a47; --accent: #43b8c9; --accent-soft: #123640;
+  --bg: #0f1822; --surface: #16222f; --ink: #e4ecf3; --muted: #95a8ba; --line: #263749;
+  --danger: #e0786f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 15.5px/1.7 var(--font-body); }
+a { color: var(--accent); }
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.35; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+/* Masthead */
+.mast { background: var(--surface); color: var(--ink); border-bottom: 1px solid var(--line); }
+.mast .wrap { display: flex; align-items: center; gap: 16px; padding-top: 14px; padding-bottom: 14px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; margin-right: auto; }
+.logo { flex: none; width: 66px; height: 54px; background: #fff; border-radius: 10px; display: grid; place-items: center; box-shadow: 0 0 0 1px var(--line); }
+.logo img { height: 48px; width: auto; display: block; }
+.brand b { display: block; font-size: 17px; letter-spacing: .01em; }
+.brand small { display: block; font-size: 12.5px; color: var(--muted); }
+.author { text-align: right; font-size: 13px; color: var(--muted); line-height: 1.45; border-left: 1px solid var(--line); padding-left: 16px; }
+.author b { color: var(--ink); font-weight: 600; }
+.mode { font-size: 12px; border: 1px solid var(--gold); color: #8a6a2b; border-radius: 999px; padding: 1px 9px; display: inline-block; margin-bottom: 2px; }
+.mini-search { flex: 0 1 280px; }
+.mini-search input, .hero-search input { width: 100%; border-radius: 10px; border: 1px solid transparent; }
+.mini-search input { padding: 7px 12px; background: var(--bg); border-color: var(--line); }
+
+/* Hero */
+.hero { background: linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%); color: var(--on-navy); }
+.hero .wrap { padding-top: 28px; padding-bottom: 36px; display: grid; gap: 16px; }
+.hero h1 { font-size: clamp(24px, 3.4vw, 34px); font-weight: 700; max-width: 22em; }
+.hero p { margin: 0; color: var(--on-navy-muted); max-width: 40em; }
+.hero .ai-note { font-size: 13px; border: 1px solid #2f5178; border-radius: 8px; padding: 6px 12px; justify-self: start; }
+.hero-search { max-width: 640px; }
+.hero-search input { padding: 13px 16px; font-size: 16px; background: var(--surface); color: var(--ink); }
+.hero-stats { display: flex; gap: 28px; flex-wrap: wrap; font-size: 14px; color: var(--on-navy-muted); }
+.hero-stats b { color: var(--on-navy); font: 600 22px/1 var(--font-mono); margin-right: 6px; font-variant-numeric: tabular-nums; }
+
+main.wrap { padding-top: 28px; padding-bottom: 56px; display: grid; gap: 32px; }
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.sec-head h2 { font-size: 20px; }
+.sec-head span { color: var(--muted); font-size: 14px; }
+.crumbs { font-size: 13.5px; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; }
+.crumbs a { color: var(--muted); }
+
+/* Topic cards */
+.topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.topic { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 12px; color: var(--ink); text-decoration: none; align-content: start; border-top: 3px solid var(--accent); }
+.topic:hover { box-shadow: 0 6px 22px rgba(13, 36, 64, .10); }
+.topic-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.topic h3 { font-size: 20px; }
+.topic h3 small { display: block; font: 500 12.5px var(--font-body); color: var(--muted); letter-spacing: .02em; }
+.count { font: 600 13px var(--font-mono); color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.topic ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 13.5px; color: var(--muted); }
+.topic li { display: flex; justify-content: space-between; gap: 10px; }
+.topic li span:last-child { font-family: var(--font-mono); }
+.topic li.zero { opacity: .5; }
+
+/* Recently summarised */
+.recent { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.recent a { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; text-decoration: none; color: var(--ink); display: grid; gap: 6px; }
+.recent a:hover { border-color: var(--accent); }
+.recent .k { font-size: 12px; color: var(--accent); font-weight: 600; }
+.recent p { margin: 0; font-weight: 500; line-height: 1.55; }
+
+/* Category view */
+.cat-title h1 { font-size: 28px; }
+.cat-title p { margin: 4px 0 0; color: var(--muted); }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.tabs button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: 14px; display: inline-flex; gap: 8px; align-items: center; }
+.tabs button span { font: 500 12px var(--font-mono); color: var(--muted); }
+.tabs button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.tabs button[aria-pressed="true"] span { color: rgba(255,255,255,.8); }
+.toolbar { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 14px; }
+.toolbar label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.list { display: grid; gap: 10px; }
+.item { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; display: grid; gap: 6px; text-decoration: none; color: var(--ink); }
+.item:hover { border-color: var(--accent); }
+.item .tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 12.5px; color: var(--muted); }
+.item .lead { font-weight: 600; font-size: 16px; line-height: 1.5; }
+.item .en { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.item .takeaway { font-size: 14.5px; line-height: 1.6; display: flex; gap: 8px; }
+.item .takeaway b { flex: none; font-size: 12px; color: var(--accent); background: var(--accent-soft); border-radius: 4px; padding: 1px 6px; height: fit-content; margin-top: 2px; }
+.chip { border: 1px solid var(--line); border-radius: 6px; padding: 1px 8px; font-size: 12px; white-space: nowrap; }
+.chip.year { font-family: var(--font-mono); }
+.chip.wip { border-style: dashed; }
+.chip.ok { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+.chip.must { background: #f6ecd6; border-color: transparent; color: #7a5a1c; font-weight: 600; }
+.guide { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 20px 22px; display: grid; gap: 14px; }
+.guide-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.guide h2 { font-size: 16px; color: var(--accent); }
+.guide p { margin: 0; }
+.guide .hint { color: var(--muted); }
+.terms { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.terms div { background: var(--bg); border-radius: 8px; padding: 10px 12px; }
+.terms dt { font-weight: 600; font-size: 14px; }
+.terms dd { margin: 2px 0 0; font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+.must-list h3 { font-size: 14px; margin-bottom: 4px; }
+.must-list ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.must-list li span { color: var(--muted); font: 12.5px var(--font-mono); }
+.overview { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.ov { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; cursor: pointer; display: grid; gap: 6px; }
+.ov:hover { border-color: var(--accent); }
+.ov b { font-size: 15px; }
+.ov span { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+.ov small { font-size: 12.5px; color: var(--accent); }
+.check { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 600; cursor: pointer; }
+.empty { color: var(--muted); padding: 28px; text-align: center; border: 1px dashed var(--line); border-radius: 12px; }
+
+/* Paper sheet */
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: clip; max-width: 880px; }
+.sheet-head { padding: 26px 30px 22px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; }
+.sheet-head h1 { font-size: 23px; font-weight: 700; }
+.cite { color: var(--muted); font-size: 14px; }
+.orig { font-size: 14.5px; line-height: 1.55; color: var(--ink); }
+.orig span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 1px; }
+.sheet-body { padding: 26px 30px 30px; display: grid; gap: 24px; }
+.keypoint { background: var(--navy); color: var(--on-navy); border-radius: 12px; padding: 18px 20px; }
+.keypoint small { display: block; color: var(--gold); font-size: 12.5px; font-weight: 600; letter-spacing: .06em; margin-bottom: 4px; }
+.keypoint p { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.6; }
+.facts { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 0; }
+.facts div { background: var(--surface); padding: 10px 14px; flex: 1 1 190px; }
+.facts dt { font-size: 12px; color: var(--muted); }
+.facts dd { margin: 2px 0 0; font-size: 14.5px; }
+.block h2 { font-size: 15px; color: var(--accent); margin-bottom: 6px; }
+.block p, .block ul { margin: 0; }
+.block ul { padding-left: 20px; display: grid; gap: 4px; }
+.ai { display: grid; gap: 12px; }
+.ai-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: space-between; }
+.ai-head h2 { font-size: 17px; }
+.badge-ai.reviewed { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.badge-ai { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.layers-note { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); }
+.layer { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.layer-head { display: flex; gap: 12px; align-items: flex-start; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.layer-head h2 { font-size: 16px; }
+.layer-head h2 small { font: 500 12.5px var(--font-body); color: var(--muted); margin-left: 8px; }
+.layer-head p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.ln { flex: none; width: 28px; height: 28px; border-radius: 50%; font: 600 14px/28px var(--font-mono); text-align: center; color: #fff; }
+.layer.evidence .layer-head { background: var(--accent-soft); } .layer.evidence .ln { background: var(--accent); }
+.layer.authors .layer-head { background: var(--bg); } .layer.authors .ln { background: var(--navy-2); }
+.layer.implication { border-style: dashed; } .layer.implication .ln { background: var(--muted); }
+.layer-body { padding: 14px 18px 16px; display: grid; gap: 6px; }
+.layer-body h4 { margin: 6px 0 0; font-size: 13.5px; color: var(--accent); }
+.layer-body h4:first-child { margin-top: 0; }
+.layer-body p, .layer-body ul { margin: 0; }
+.layer-body ul { padding-left: 20px; display: grid; gap: 4px; }
+.ed-layer { font-size: 15px; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+.ed-layer span { display: block; font-size: 12.5px; font-weight: 400; color: var(--muted); }
+.block.apply { background: var(--accent-soft); border-radius: 12px; padding: 16px 18px; }
+.source { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.srcnote { font-size: 13px; color: var(--muted); word-break: break-all; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 14px; cursor: pointer; font-size: 14px; text-decoration: none; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.08); color: #fff; }
+.btn.ghost-danger { color: var(--danger); }
+.btn:disabled { opacity: .55; cursor: default; }
+.localpath { font: 12px/1.5 var(--font-mono); color: var(--muted); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.localpath code { flex: 1 1 300px; word-break: break-all; }
+.pending { border: 1px dashed var(--line); border-radius: 12px; padding: 18px; color: var(--muted); }
+.edited { font-size: 12.5px; color: var(--muted); }
+
+/* Editor */
+.editor { display: grid; gap: 16px; }
+.field { display: grid; gap: 4px; }
+.field label { font-size: 13.5px; font-weight: 600; }
+.field .hint { font-size: 12.5px; color: var(--muted); font-weight: 400; }
+.field input, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; background: var(--bg); line-height: 1.6; }
+.field textarea { resize: vertical; min-height: 84px; }
+.field.big textarea { font-size: 16px; font-weight: 600; min-height: 70px; }
+.row2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; position: sticky; bottom: 0; background: var(--surface); padding: 12px 0 4px; border-top: 1px solid var(--line); }
+.status { font-size: 13.5px; color: var(--muted); }
+.status.err { color: var(--danger); }
+
+footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+footer .wrap { padding-top: 20px; padding-bottom: 28px; display: grid; gap: 4px; }
+@media (max-width: 640px) {
+  .author { display: none; }
+  .mast .wrap { gap: 10px; padding-top: 10px; padding-bottom: 10px; }
+  .mini-search { flex: 1 1 100%; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; margin: 0 -20px; padding-left: 20px; padding-right: 20px; scrollbar-width: none; }
+  .tabs button { flex: none; }
+  .sheet-head, .sheet-body { padding-left: 18px; padding-right: 18px; }
+  .hero .wrap { padding-top: 22px; padding-bottom: 26px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* Figures */
+.figs { display: grid; gap: 14px; margin-top: 4px; }
+.fig { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px 12px; background: var(--surface); display: grid; gap: 10px; }
+.fig-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.fig-head h5 { margin: 0; font-size: 14.5px; color: var(--ink); }
+.fig-kind { font-size: 11.5px; color: var(--muted); white-space: nowrap; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
+.fig-cap { margin: 0; font-size: 13.5px; color: var(--ink); line-height: 1.7; }
+.layer-body .fig p { max-width: none; }
+.fig-zoom + .fig-note { text-align: center; margin-top: -4px; }
+.fig-src { margin: 0; font-size: 12px; color: var(--muted); }
+.fb { display: grid; gap: 8px; }
+.fb-row { display: grid; grid-template-columns: minmax(110px, 34%) 1fr; gap: 10px; align-items: center; }
+.fb-label { font-size: 13px; color: var(--ink); text-align: right; line-height: 1.3; }
+.fb-bars { display: grid; gap: 3px; }
+.fb-track { display: flex; align-items: center; gap: 8px; min-height: 18px; }
+.fb-fill { height: 16px; border-radius: 0 4px 4px 0; min-width: 2px; }
+.fb-val { font-family: var(--font-mono); font-size: 12px; color: var(--ink); white-space: nowrap; }
+.fb-na { font-size: 12px; color: var(--muted); }
+.fig-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.fig-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.fig svg { width: 100%; height: auto; display: block; }
+.fig svg text { font-family: var(--font-body); fill: var(--muted); font-size: 12px; }
+.fig svg .v { fill: var(--ink); font-family: var(--font-mono); font-size: 11.5px; }
+.fig-table { overflow-x: auto; max-width: 100%; }
+.fig, .figs, .figs-wrap { min-width: 0; }
+.fig-table th { white-space: nowrap; }
+@media (max-width: 600px) { .fig-table table { min-width: 560px; } }
+.fig-table table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.fig-table th, .fig-table td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+.fig-table th { color: var(--muted); font-weight: 600; font-size: 12px; background: var(--accent-soft); }
+.fig-table td:not(:first-child) { font-family: var(--font-mono); font-size: 12.5px; }
+.fig img { max-width: 100%; height: auto; border-radius: 6px; border: 1px solid var(--line); background: #fff; justify-self: center; }
+.fig-tools { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.fig-form { border: 1px dashed var(--accent); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; }
+.fig-form .row2 { gap: 10px; }
+.fig-form .hint, .fig-note { font-size: 12px; color: var(--muted); }
+.fig-add { justify-self: start; }
+.fig-form [hidden] { display: none !important; }
+.fig-form select { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); }
+@media (max-width: 600px) { .fb-row { grid-template-columns: 1fr; gap: 3px; } .fb-label { text-align: left; } }
+.fig-zoom { all: unset; cursor: zoom-in; justify-self: center; display: block; max-width: 100%; }
+.fig-zoom:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+.zoom-ov { position: fixed; inset: 0; z-index: 100; background: rgba(5, 12, 22, .92); display: grid; place-items: center; gap: 10px; padding: 16px; cursor: zoom-out; }
+.zoom-ov img { max-width: 100%; max-height: calc(100vh - 70px); object-fit: contain; background: #fff; border-radius: 6px; }
+.zoom-ov span { color: #cfdbe6; font-size: 13px; }
+/* Full-width, justified body text (CJK reads evenly when both edges align) */
+@media (min-width: 700px) { .layer-body p, .layer-body li, .guide p, .block p, .block li, .fig-cap { text-align: justify; text-justify: inter-character; } }
+@media (max-width: 600px) { .facts div { flex: 1 1 40%; padding: 8px 12px; } .facts dd { font-size: 13.5px; } }
+.lockbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: space-between; border: 1px dashed var(--line); border-radius: 10px; padding: 10px 14px; font-size: 13.5px; }
+.lockbar.locked { border-style: solid; border-color: var(--accent); background: var(--accent-soft); color: var(--ink); font-weight: 600; }
+.unlockf { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-weight: 400; }
+.unlockf input { width: 90px; font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); letter-spacing: .2em; }
+.figs-first { display: grid; gap: 6px; }
+@media print {
+  body > * { display: none !important; }
+  body::before { content: "Cataract & IOL Insight 的內容僅供線上閱讀，請至網站查閱：https://claude.ai/artifact/82a8AZAc6mBKCchJnBfvqQ"; display: block; padding: 40mm 20mm; font: 12pt/1.8 system-ui, sans-serif; color: #142538; }
+}
+.jump { position: sticky; top: 0; z-index: 20; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 8px 0; margin: -8px 0 0; background: var(--surface); border-bottom: 1px solid var(--line); }
+.jump::-webkit-scrollbar { display: none; }
+.jump button { flex: none; font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.jump button:hover { border-color: var(--accent); color: var(--accent); }
+.jump button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media print { .jump { display: none; } }
+.fold > summary, details.layer > summary { list-style: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.fold > summary::-webkit-details-marker, details.layer > summary::-webkit-details-marker { display: none; }
+.fold > summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; }
+.fold > summary h4 { margin: 6px 0 0; }
+.fold { border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.fold:last-child { border-bottom: none; padding-bottom: 0; }
+.fold-body { display: grid; gap: 6px; margin-top: 6px; }
+.fold > summary:focus-visible, details.layer > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 6px; }
+.chev { flex: none; display: inline-flex; align-items: center; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.chev::after { content: "展開 ▾"; }
+.fold[open] > summary .chev::after, details.layer[open] > summary .chev::after { content: "收合 ▴"; }
+details.layer > summary.layer-head { align-items: center; }
+details.layer > summary .lh-text { flex: 1; min-width: 0; }
+details.layer:not([open]) > summary.layer-head { border-bottom: none; }
+summary:hover .chev { color: var(--accent); }
+.jump-all { margin-left: auto; color: var(--accent) !important; border-color: var(--accent) !important; }
+.share { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cat-title .share { margin-top: 10px; }
+.share-out { font-size: 12.5px; color: var(--accent); display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.share-url { font: inherit; font-size: 12px; width: min(420px, 80vw); padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); }
+.fig-ref { margin: 0; padding: 12px 14px; border: 1px dashed var(--line); border-radius: 8px; font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="回到首頁">
+      <span class="logo"><img src="data:image/png;base64,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" alt="Posen Wang 品牌標誌"></span>
+      <span><b>Cataract &amp; IOL Insight</b><small>白內障與人工水晶體臨床文獻庫</small></span>
+    </a>
+    <div class="mini-search" id="miniSearch" hidden><input id="q2" type="search" placeholder="搜尋文獻…" aria-label="搜尋文獻"></div>
+    <div class="author"><span id="mode"></span><div><b>Posen Wang</b></div><div>Cataract &amp; IOL Consultant</div></div>
+  </div>
+</header>
+<div id="hero"></div>
+<main class="wrap" id="app"></main>
+<footer><div class="wrap">
+  <div>© 2026 Posen Wang · Cataract &amp; IOL Insight　文獻蒐集、統整與分類：Posen Wang</div>
+  <div>中文摘要由 AI 工具輔助生成，可能有疏漏，引用數據請以原文為準。內容供眼科與產業專業人士教育交流，不構成醫療建議。</div>
+</div></footer>
+
+<script id="catalog" type="application/json">{"updated": "2026-11-11", "categories": [{"id": "01", "en": "Optical Design", "zh": "光學設計", "subs": [{"id": "01", "en": "Image Quality", "zh": "球差、MTF/PSF、瞳孔、色差", "intro": "IOL 的成像品質取決於它和角膜像差的搭配。角膜通常帶有正球差，非球面 IOL 以零或負球差設計來中和，目的是提升對比敏感度，在瞳孔較大時差異更明顯。不同族群的角膜球差分佈不同，選擇非球面設計時可以參考本地族群的資料。", "terms": ["球差（SA）：光線通過鏡片邊緣與中央的聚焦位置不同，瞳孔越大影響越明顯", "MTF：調制轉換函數，描述鏡片把不同細緻度的影像傳遞出來的能力", "Strehl ratio：實際成像峰值與理想成像的比值，越接近 1 越好"]}, {"id": "02", "en": "Positioning & Edge", "zh": "傾斜、偏心、邊緣設計與眩光", "intro": "IOL 的光學設計要發揮作用，前提是在眼內的位置正確。偏心與傾斜會降低非球面 IOL 的成像品質，球差矯正越強的設計對位置越敏感。鏡片的 haptic 與單片式、三片式結構會影響囊袋內的穩定性；光學區邊緣設計則和術後眩光、暗影等 dysphotopsia 有關。", "terms": ["Decentration：IOL 光學中心偏離視軸", "Tilt：IOL 平面相對於視軸傾斜", "Dysphotopsia：術後出現的光暈、光條（positive）或顳側暗影（negative）"]}]}, {"id": "02", "en": "Biometry & Formula", "zh": "生物量測與計算", "subs": [{"id": "01", "en": "IOL Formulas & ELP", "zh": "公式比較、ELP、A-constant", "intro": "IOL 度數計算的核心，是預測鏡片在眼內的最終位置（ELP）。新一代公式（Barrett、Kane、EVO 等）在一般眼睛已相當準確；但在鞏膜固定、睫狀溝等非囊袋內的位置，ELP 會改變，常需要調整 A-constant 或度數。這個資料夾目前以鞏膜固定的度數計算研究為主。", "terms": ["ELP：有效鏡片位置，即 IOL 在眼內與角膜的實際距離", "PE（Prediction Error）：術後實際屈光與預測值的差", "A-constant：公式中代表鏡片位置特性的常數，可依臨床數據優化"]}, {"id": "02", "en": "Post-LASIK & Post-RK", "zh": "屈光手術後度數計算"}, {"id": "03", "en": "Toric Calculation", "zh": "Toric 計算、PCA、SIA", "intro": "Toric 度數計算除了前角膜 K 值，還要考慮後角膜散光（PCA）與手術誘發散光（SIA）。新一代 toric 公式與 Total Keratometry 已把這些因素納入，不同公式在大樣本中的準確度可以直接比較。閱讀 toric 研究的結果前，也建議先熟悉散光向量分析與標準化報告格式。", "terms": ["PCA：後角膜散光，多為逆規，會抵銷部分順規前角膜散光", "TK（Total Keratometry）：同時量測前、後角膜的總角膜屈光度", "向量分析：把散光的度數與軸向一起計算", "Double-angle plot：把散光軸角度加倍後作圖，用來呈現散光分佈"]}]}, {"id": "03", "en": "IOL Technology", "zh": "人工水晶體", "subs": [{"id": "01", "en": "Monofocal & Monofocal Plus", "zh": "單焦與增強型單焦"}, {"id": "02", "en": "EDOF & Trifocal", "zh": "延焦與多焦"}, {"id": "03", "en": "Toric & PAC", "zh": "Toric 設計、PAC、旋轉穩定性", "intro": "Toric IOL 用來矯正角膜散光，術後效果取決於三件事：度數計算、軸位對準與鏡片的旋轉穩定性。一般估計 toric 每偏離 1° 約損失 3% 的散光矯正效果，現代 toric IOL 術後平均旋轉約 2–3°。另一個較新的議題是角膜散光從中央到周邊並不一致，瞳孔放大時有效散光會變小，漸進式 toric（PAC）設計就是針對這一點。", "terms": ["WTR / ATR：順規 / 逆規散光，年紀越大越常轉為 ATR", "PAC（Progressive Axial Correction）：柱鏡度由光學區中央往周邊遞減的 toric 設計", "旋轉穩定性：術後 IOL 軸位與植入時軸位的差異，常以平均絕對旋轉與 5° 以內比例表示"]}, {"id": "04", "en": "IOL Materials", "zh": "材料、glistening、PCO", "intro": "IOL 材料主要分為疏水性壓克力、親水性壓克力與矽膠。材料會影響 glistening（鏡片內的微小水泡）、後囊混濁（PCO）的發生率、長期透明度，以及推注時的折疊與展開表現。疏水性壓克力搭配方銳邊設計，是目前降低 PCO 的主流做法。", "terms": ["Glistening：鏡片材料內形成的微小充水空泡，可能增加散射光", "PCO：後囊混濁，俗稱「次發性白內障」，需以 YAG 雷射處理", "Tg：玻璃轉化溫度，影響壓克力材料的柔軟度與展開速度"]}, {"id": "05", "en": "Delivery System & Injector", "zh": "推注器與預裝系統", "intro": "預裝式推注系統已成為主流，與手術效率、無菌操作和切口大小都有關係。這個主題的實驗研究關注三件事：不同推注器實際需要多大的切口、推注過程的阻力是否穩定，以及鏡片進入眼內後的展開速度（會受溫度影響）。", "terms": ["Preloaded IOL：出廠前已裝入推注器的 IOL，免去手術室裝載步驟", "Wound-assisted injection：推注器前端只抵住切口而不完全進入，可縮小所需切口"]}]}, {"id": "04", "en": "Complex Surgery", "zh": "複雜性手術", "subs": [{"id": "01", "en": "PCR & Vitreous Management", "zh": "後囊破裂與玻璃體處置", "intro": "後囊破裂（PCR）是白內障手術最常見的術中併發症之一。處置是否得當，會影響玻璃體脫出的程度、IOL 能放在哪裡，以及術後視力與視網膜併發症。了解破裂最常發生在哪個步驟，有助於預防與事先準備備案。", "terms": ["PCR：後囊破裂", "Anterior vitrectomy：前部玻璃體切除，用來清除脫出的玻璃體", "Backup IOL：囊袋無法使用時的備案鏡片，通常為三片式"]}, {"id": "02", "en": "Sulcus Fixation & Optic Capture", "zh": "睫狀溝植入與 optic capture", "intro": "後囊破裂但前囊仍完整時，睫狀溝植入是常見的備案。關鍵原則有三：睫狀溝應使用三片式 IOL，單片式壓克力 IOL 放在睫狀溝容易摩擦虹膜，引起色素播散、出血或眼壓上升；度數通常要比囊袋內略減；若前囊口完整，可做 optic capture 提升穩定性與置中。", "terms": ["Optic capture：把三片式 IOL 的光學區從前囊口下方推入、haptic 留在睫狀溝", "UGH syndrome：IOL 摩擦虹膜造成的葡萄膜炎、青光眼與前房出血"]}, {"id": "03", "en": "Yamane & Scleral Fixation", "zh": "Yamane 與鞏膜固定", "intro": "沒有囊袋支撐時，二次 IOL 的選項包括前房 IOL、虹膜固定 IOL，以及鞏膜固定（縫線或無縫線）。2017 年發表的 Yamane 雙針 flange 術式不需縫線、固定穩定，已成為主流做法。目前證據顯示它與縫線固定的長期結果相當、手術時間較短；研究重點已轉向 flange 製作、haptic 固定力、IOL 度數選擇與長期穩定性。", "terms": ["Flange：燒灼 haptic 末端形成的膨大結構，卡在鞏膜隧道中固定 IOL", "ISHF：鞏膜內 haptic 固定（intrascleral haptic fixation）", "30G 薄壁針：Yamane 術式用來穿刺鞏膜並引導 haptic 的針具"]}, {"id": "04", "en": "IOL Subluxation & Exchange", "zh": "IOL 脫位與置換", "intro": "IOL 或水晶體半脫位、脫位多與懸韌帶無力有關，例如假性脫皮症候群、高度近視、外傷或曾接受玻璃體手術，可能在白內障手術多年後才發生。處置方式依脫位程度與位置而定：重新固定原 IOL，或取出後改用鞏膜固定、虹膜固定 IOL；後脫位通常需要與玻璃體視網膜科合作。", "terms": ["Zonular weakness：懸韌帶無力", "PXF：假性脫皮症候群，晚期 IOL 脫位的常見危險因子", "In-the-bag dislocation：IOL 連同囊袋一起脫位"]}]}, {"id": "05", "en": "Others · Society Articles", "zh": "其他資料（醫學會文章）", "subs": [{"id": "01", "en": "Society & Magazine Articles", "zh": "醫學會刊物與專業雜誌文章（EyeNet、EyeWorld、CRST）", "intro": "這裡收錄醫學會刊物與專業雜誌的文章，例如 AAO EyeNet、EyeWorld 與 CRST。這類文章多為專家經驗分享、技術要點或會議重點整理，未經正式期刊同儕審查；引用時請與正式發表的期刊論文分開看待。", "terms": []}, {"id": "02", "en": "Congress Abstracts & Posters", "zh": "年會口頭報告摘要與海報（ESCRS 等）", "intro": "這裡收錄醫學會年會的口頭報告摘要與海報，例如 ESCRS。內容多為初步結果，篇幅有限、細節較少，部分研究之後才會以正式論文發表；引用時請優先查找是否已有對應的期刊版本。", "terms": []}]}, {"id": "06", "en": "IOL Product Library", "zh": "品牌相關產品資料庫", "subs": [{"id": "01", "en": "Kowa Avansee", "zh": ""}, {"id": "02", "en": "Alcon", "zh": ""}, {"id": "03", "en": "J&J Vision", "zh": ""}, {"id": "04", "en": "HOYA", "zh": ""}, {"id": "05", "en": "Bausch + Lomb", "zh": ""}, {"id": "06", "en": "Rayner", "zh": ""}, {"id": "07", "en": "ZEISS", "zh": ""}, {"id": "08", "en": "Specifications & Comparisons", "zh": "跨品牌規格比較"}]}], "papers": [{"id": "p3c56098a", "cat": "01", "sub": "01", "year": 2015, "title": "Distribution of corneal and ocular spherical aberrations in eyes with cataract in the Taiwanese population", "titleZh": "台灣白內障患者的角膜與全眼球差分佈", "doi": "10.1016/j.tjo.2015.03.003", "mustRead": true, "mustRank": 1}, {"id": "p2254d58e", "cat": "01", "sub": "02", "year": 2022, "title": "Dysphotopsias or Unwanted Visual Phenomena after Cataract Surgery", "titleZh": "白內障術後眩光與異常視覺現象（dysphotopsia）綜述", "doi": "10.3390/life13010053", "mustRead": true, "mustRank": 3}, {"id": "pb474fcec", "cat": "01", "sub": "02", "year": 2015, "title": "Capsular bag performance of a hydrophobic acrylic 1-piece intraocular lens", "titleZh": "疏水性壓克力單片式 IOL 的囊袋內表現：與三片式比較", "doi": "10.1016/j.jcrs.2014.04.030"}, {"id": "pe9a6e8ab", "cat": "01", "sub": "02", "year": 2016, "title": "Comparisons of the in-the-bag stabilities of single-piece and three-piece intraocular lenses for age-related cataract patients: a randomized controlled trial", "titleZh": "單片式 vs 三片式 IOL 的囊袋內穩定性：隨機對照試驗", "doi": "10.1186/s12886-016-0283-4", "mustRead": true, "mustRank": 2}, {"id": "p313a1f93", "cat": "01", "sub": "02", "year": 2014, "title": "Evaluation of actual retinal images produced by misaligned aspheric intraocular lenses in a model eye", "titleZh": "非球面 IOL 偏位時的實際視網膜成像：模型眼研究", "doi": "10.2147/OPTH.S72053"}, {"id": "p06a53ec2", "cat": "01", "sub": "02", "year": 2019, "title": "Effects of decentration and tilt on the optical performance of 6 aspheric intraocular lens designs in a model eye", "titleZh": "偏心與傾斜對 6 款非球面 IOL 光學表現的影響：模型眼研究", "doi": "10.1016/j.jcrs.2018.10.049", "mustRead": true, "mustRank": 1}, {"id": "p96e9bfd1", "cat": "02", "sub": "01", "year": 2020, "title": "Scleral fixation of intraocular lenses with Gore-Tex suture: refractive outcomes and comparison of lens power formulas", "titleZh": "Gore-Tex 縫線鞏膜固定 IOL：屈光結果與度數公式比較", "doi": "10.1016/j.oret.2019.02.005"}, {"id": "p65028f97", "cat": "02", "sub": "01", "year": 2023, "title": "Refractive outcome and lens power calculation after intrascleral intraocular lens fixation: a comparison of 3-piece and 1-piece intrascleral fixation technique", "titleZh": "鞏膜內固定 IOL 的度數計算：三片式 vs 單片式", "doi": "10.1186/s40662-023-00341-6", "mustRead": true, "mustRank": 2}, {"id": "p1542430a", "cat": "02", "sub": "01", "year": 2024, "title": "Comparative Analysis of Effective Lens Position and Refractive Outcomes in Scleral-Fixated versus Intracapsular Intraocular Lenses", "titleZh": "鞏膜固定 vs 囊袋內 IOL：有效鏡片位置（ELP）與屈光結果比較", "url": "https://www.dovepress.com/comparative-analysis-of-effective-lens-position-and-refractive-outcome-peer-reviewed-fulltext-article-OPTH"}, {"id": "pdaca88d6", "cat": "02", "sub": "01", "year": 2024, "title": "Comparison of Refractive Prediction Error by Axial Length in Flanged Intrascleral Intraocular Lens Fixation", "titleZh": "Flange 鞏膜內固定的屈光預測誤差：依眼軸長度分析", "doi": "10.2147/OPTH.S455178"}, {"id": "p9e9692c1", "cat": "02", "sub": "01", "year": 2025, "title": "Intraocular lens power calculation adapted to sutureless scleral fixation with the Yamane technique", "titleZh": "Yamane 無縫線鞏膜固定的 IOL 度數計算調整", "doi": "10.1097/j.jcrs.0000000000001739", "mustRead": true, "mustRank": 1}, {"id": "p0dd20888", "cat": "02", "sub": "01", "year": 2026, "title": "Emmetropia Verifying Optical (EVO) formula in secondary scleral fixation using the Yamane technique: a retrospective comparison of intraocular lens power calculation formulas", "titleZh": "EVO 公式用於 Yamane 二次鞏膜固定：度數公式比較", "doi": "10.1186/s12886-026-04934-2"}, {"id": "pf14c735a", "cat": "02", "sub": "03", "year": 2025, "title": "Standards for analyzing astigmatic outcomes: Part I: astigmatism basics", "titleZh": "散光結果分析標準（一）：散光基本觀念", "doi": "10.1097/j.jcrs.0000000000001644", "mustRead": true, "mustRank": 2}, {"id": "pf9f973f7", "cat": "02", "sub": "03", "year": 2026, "title": "Accuracy of six contemporary toric formulas: analysis of 6753 eyes", "titleZh": "6 種 toric 公式準確度比較：6,753 眼分析", "doi": "10.1097/j.jcrs.0000000000001964", "mustRead": true, "mustRank": 1}, {"id": "p97f7efaf", "cat": "03", "sub": "03", "year": 2006, "title": "The topography of the central and peripheral cornea", "titleZh": "角膜中央與周邊的地形圖特徵", "doi": "10.1167/iovs.05-1181"}, {"id": "p70974fbd", "cat": "03", "sub": "03", "year": 2018, "title": "Relationship between central and peripheral corneal astigmatism in elderly patients", "titleZh": "高齡患者角膜中央與周邊散光的關係", "doi": "10.1007/s10043-018-0427-2"}, {"id": "p0a4c0f9f", "cat": "03", "sub": "03", "year": 2021, "title": "Central and mid-peripheral corneal astigmatism in an elderly population: a retrospective analysis of Scheimpflug topography results", "authors": "Łabuz G, Varadi D, Khoramnia R, Auffarth GU", "journal": "Scientific Reports", "citation": "Sci Rep. 2021;11:7968", "doi": "10.1038/s41598-021-81772-w", "studyType": "回溯性研究", "n": "641 位患者（60 歲以上）", "tags": ["PAC", "角膜散光", "Pentacam", "ATR"], "conclusion": "角膜散光從中央往周邊遞減，ATR、斜軸與高散光的眼睛中央與周邊差異更大。", "about": "Toric IOL 的度數都依中央角膜決定，但瞳孔放大時，參與成像的是更周邊的角膜。這篇用海德堡大學醫院 641 位 60 歲以上患者的 Pentacam 資料，比較 2–6 mm 五個區域的總角膜散光，回答「周邊的散光和中央一樣嗎？」", "keyResults": ["2 mm 與 6 mm 區的散光絕對差異中位數為 0.30 D（−0.36 至 0.64）", "5 mm 與 6 mm 之間差異縮小為 0.10 D（0 至 0.20）", "散光型態：WTR 53%、ATR 34%、斜軸 13%", "ATR 與斜軸散光隨直徑增加，柱鏡度下降最明顯；高散光患者中央與周邊差異也較大"], "clinical": "對 ATR、斜軸或高散光眼，術後在暗室或大瞳孔下出現的殘餘散光，周邊角膜散光較低可能是原因之一。此推論來自角膜地形資料，研究本身沒有驗證術後視覺結果。", "limitations": ["單一中心、歐洲族群，結果不一定能直接套用到亞洲患者", "只分析角膜，沒有連結術後視覺結果"], "authorsView": "作者認為，中央角膜散光與中周邊散光並不相同，ATR、斜軸與高散光患者的差異更大；對瞳孔較大的患者，只依中央量測決定 toric 度數，可能造成矯正不完全。", "titleZh": "角膜中央與周邊散光差異：641 位高齡患者的 Pentacam 分析", "mustRead": true, "mustRank": 2}, {"id": "pdda6c98a", "cat": "03", "sub": "03", "year": 2021, "title": "Changes in Corneal Morphology with Age in Asian Population: A Multicenter Study of 30,618 Cases", "titleZh": "亞洲族群角膜形態隨年齡的變化：30,618 例多中心研究", "doi": "10.1007/s12325-021-01922-4"}, {"id": "pa5d1cb64", "cat": "03", "sub": "03", "year": 2024, "title": "Rotational stability of toric intraocular lenses by lens model and haptic design: systematic review and single-arm meta-analysis", "authors": "Li ES, Vanderford EK, Xu Y, Kang PC", "journal": "Journal of Cataract & Refractive Surgery", "citation": "J Cataract Refract Surg. 2024;50:976–984", "doi": "10.1097/j.jcrs.0000000000001486", "studyType": "系統性回顧與單臂 meta-analysis", "n": "51 篇研究，共 4,863 眼", "tags": ["Toric", "旋轉穩定性", "Haptic 設計", "Meta-analysis"], "conclusion": "現代 toric IOL 術後平均旋轉約 2.36°，各種 Haptic 設計之間彼此比較無顯著差異。", "about": "Toric IOL 術後會旋轉多少度？不同 haptic 設計有沒有差別？這篇系統性回顧納入 51 篇研究、4,863 眼，合併計算各種 toric IOL 的術後平均絕對旋轉角度，並依鏡片型號與 haptic 設計分組比較。", "keyResults": ["全部 toric IOL 合併平均絕對旋轉：2.36°（95% CI 2.08–2.64）", "Plate haptic 2.83°、loop haptic 2.48°、double-loop 1.83°、plate-loop 1.91°", "次群組整體有差異 (P = 0.04)，但事後各自比較都沒有達到顯著差異", "臨床上一般以 5° 旋轉錯位作為有意義的門檻"], "clinical": "現代 toric IOL 術後平均旋轉約 2.4°，遠低於一般認為有臨床意義的 5°。不同 haptic 設計之間整體有差異，但彼此之間比較都沒有顯著差別，代表主流設計的旋轉穩定性都已相當好。", "limitations": ["納入研究多為非隨機、異質性高", "單臂合併，無法直接比較特定兩款鏡片"], "authorsView": "作者認為，現代市售 toric IOL 都有很好的旋轉穩定性；術後旋轉受鏡片材料與設計等多項因素影響。", "titleZh": "Toric IOL 旋轉穩定性：依鏡片型號與 haptic 設計的統合分析", "mustRead": true, "url": "", "mustRank": 1}, {"id": "pc220fea5", "cat": "03", "sub": "03", "year": 2025, "title": "Study on Factors Affecting Toric Intraocular Lens Rotation Using Intraoperative OCT—Factors Influencing IOL Deployment and Proximity to Posterior Capsule After Insertion", "titleZh": "影響 toric IOL 旋轉的因素：術中 OCT 觀察鏡片展開與後囊貼合", "doi": "10.3390/jcm14186599"}, {"id": "pb5f8e384", "cat": "03", "sub": "04", "year": 2021, "title": "In-vitro glistening formation in six different foldable hydrophobic intraocular lenses", "titleZh": "6 款疏水性可折疊 IOL 的體外 glistening 比較", "doi": "10.1186/s12886-021-01879-6", "mustRead": true, "mustRank": 3}, {"id": "p0ac29666", "cat": "03", "sub": "04", "year": 2024, "title": "Innovative Polymeric Biomaterials for Intraocular Lenses in Cataract Surgery", "titleZh": "IOL 創新高分子材料綜述", "doi": "10.3390/jfb15120391"}, {"id": "p55c41cad", "cat": "03", "sub": "04", "year": 2025, "title": "How do intraocular lens materials influence the outcome of cataract surgery?", "titleZh": "IOL 材料如何影響白內障手術結果：綜述", "doi": "10.1097/ICU.0000000000001095", "mustRead": true, "mustRank": 1}, {"id": "p177b1cba", "cat": "03", "sub": "04", "year": 2026, "title": "The influence of different types of intraocular lenses on the development of posterior capsular opacification: a systematic review", "titleZh": "不同 IOL 類型對後囊混濁（PCO）的影響：系統性回顧", "mustRead": true, "mustRank": 2}, {"id": "p3b5b3f29", "cat": "03", "sub": "04", "year": 2012, "title": "Simulation of 20-year Deterioration of Acrylic IOLs Using Severe Accelerated Deterioration Tests", "titleZh": "壓克力 IOL 20 年老化的加速劣化模擬"}, {"id": "p1e00cf7c", "cat": "03", "sub": "05", "year": 2023, "title": "Experimental analysis of recommended corneal incision sizes in cataract surgery using 13 intraocular lens injector systems", "titleZh": "13 種 IOL 推注系統的建議切口大小實驗分析", "doi": "10.1038/s41598-023-29497-w", "mustRead": true, "mustRank": 1}, {"id": "p0619fa48", "cat": "03", "sub": "05", "year": 2026, "title": "Variation in resistance force during intraocular lenses injection by modern injectors and assessment of damage to the injector: a laboratory analysis", "titleZh": "現代推注器的推注阻力變化與推注器損傷：實驗室分析", "doi": "10.1038/s41598-026-41145-7"}, {"id": "pc1afb847", "cat": "03", "sub": "05", "year": 2023, "title": "Intraocular Lens Unfurling Time Exponentially Decays with Increased Solution Temperature", "titleZh": "溶液溫度越高，IOL 展開時間越短", "doi": "10.2147/OPTH.S417357"}, {"id": "p7fed5eba", "cat": "04", "sub": "01", "year": 2025, "title": "Clinical features, management, and outcomes of posterior capsule rupture during phacoemulsification surgery", "authors": "Koser E, Kemer Atik B, Emul M, Ahmet S, Kandemir Besek N, Cubuk MO, Kirgiz A", "journal": "Arquivos Brasileiros de Oftalmologia", "citation": "Arq Bras Oftalmol. 2025;88(5):e2024-0328", "doi": "10.5935/0004-2749.2024-0328", "studyType": "回溯性觀察世代研究（單一中心）", "n": "25,224 例手術中 351 眼發生 PCR", "tags": ["PCR", "玻璃體脫出", "危險因子", "睫狀溝植入", "鞏膜固定"], "conclusion": "單一中心 25,224 例超音波乳化術的 PCR 發生率為 1.3%；經適當處置，一年後 79.4% 的眼睛 BCVA 達 0.30 logMAR 或更好。", "about": "土耳其一家三級眼科醫院回溯 2017–2022 年 25,224 例超音波乳化術，納入發生 PCR (定義為術中後囊撕裂合併玻璃體脫出) 且追蹤滿一年的 351 眼，分析術前危險因子、PCR 發生的手術階段、IOL 植入位置，以及術後一年內的併發症與視力。所有 PCR 眼都接受前段玻璃體切除；囊袋無法支撐時，睫狀溝可支撐就植入三片式 IOL，否則改用鞏膜固定。", "keyResults": ["PCR 發生率 1.3% (351/25,224)；住院醫師 1.6%、主治醫師 1.2% (p = 0.006)", "術前危險因子：假性脫皮 (PEX) PCR 率 3.2%、褐色白內障 3.4%、成熟白內障 2.8%", "PCR 最常發生在乳化階段 (63%)，其次為 I&A (23.4%)；發生階段與一年 BCVA、早晚期併發症都沒有顯著相關", "同次手術植入 IOL 73.2%：睫狀溝 56.1%、囊袋 10.3%、鞏膜固定 6.8%；26.8% 暫時維持無水晶體，平均 2.77 個月後二次植入 (Z suture 鞏膜固定 54 眼、Yamane 17 眼、睫狀溝 15 眼）", "術中併發症：水晶體碎片掉入玻璃體 8% (其中 9 眼需玻璃體切除) 、虹膜損傷 7.1%", "早期併發症：角膜水腫 55.6%、眼壓升高 33.3%；晚期併發症：持續眼壓升高 11.1%、CME 5.1%、視網膜剝離 2.5%、IOL 脫位 1.4%", "BCVA (logMAR) 由術前 1.31 改善至一年 0.51 (p < 0.001)；79.4% (279/351) 達 0.30 或更好"], "clinical": "術前可以 PEX、成熟或褐色白內障等因素辨識 PCR 風險較高的病例。這篇的數據也可作為術前說明的參考範圍：即使發生 PCR，多數患者一年後仍能恢復可用視力，但 CME 與視網膜剝離需要較長期追蹤。此為單一中心結果，各院的發生率與預後可能不同。", "limitations": ["回溯性、無對照組（未發生 PCR 的病例術後一個月即轉出，缺少長期資料）", "單一轉診中心，主治醫師負責較困難的病例，住院醫師與主治醫師的 PCR 率比較可能受影響", "術者經驗只分兩級，無法依年資或手術量細分"], "authorsView": "作者認為 PCR 是超音波乳化術無法完全避免的併發症，發生率會隨術者經驗增加而下降；PEX 等高風險族群需要更加小心。發生 PCR 的患者應以跨科方式長期追蹤 CME、視網膜剝離與眼壓等問題，並預期可能需要二次手術；只要處置得當，仍能獲得令人滿意的視力與解剖結果。", "figures": [{"kind": "line", "title": "PCR 患者的 BCVA 變化（logMAR，數值越低越好）", "labels": ["術前", "術後 1 天", "1 週", "1 個月", "3 個月", "6 個月", "1 年"], "series": [{"name": "平均 BCVA", "values": [1.31, 1.57, 0.88, 0.76, 0.62, 0.6, 0.51]}], "unit": "", "lowerBetter": true, "caption": "術後第 1 天視力最差，之後逐步改善；除第 1 天外，各時間點都顯著優於術前（p < 0.001）。", "source": "依原文 Figure 1 與 Results 數據重繪（Koser et al., Arq Bras Oftalmol 2025，CC BY 4.0）", "decimals": 2}, {"kind": "bar", "title": "不同族群的 PCR 發生率", "labels": ["全部病例", "假性脫皮（PEX）", "褐色白內障", "成熟白內障", "住院醫師執刀", "主治醫師執刀"], "series": [{"name": "PCR 發生率", "values": [1.3, 3.2, 3.4, 2.8, 1.6, 1.2]}], "unit": "%", "caption": "假性脫皮（PEX）、褐色與成熟白內障的 PCR 發生率都高於整體的 1.3%；住院醫師執刀的 PCR 率顯著高於主治醫師（p = 0.006）。", "source": "依原文 Results 數據重繪（Koser et al., Arq Bras Oftalmol 2025，CC BY 4.0）"}, {"kind": "table", "title": "PCR 發生的手術階段與一年視力", "columns": ["手術階段", "眼數（%）", "一年 BCVA（logMAR）"], "rows": [["Capsulorhexis", "13（3.7%）", "0.67 ± 0.88"], ["Sculpting", "6（1.7%）", "0.95 ± 0.76"], ["Phacoemulsification", "221（63%）", "0.39 ± 0.46"], ["Irrigation & aspiration", "82（23.4%）", "0.43 ± 0.58"], ["IOL 植入與 OVD 移除", "29（8.2%）", "0.38 ± 0.60"]], "caption": "較早階段發生 PCR 的眼睛，一年視力數值上較差，但差異未達統計顯著（p = 0.67）。", "source": "整理自原文 Table 2（Koser et al., Arq Bras Oftalmol 2025，CC BY 4.0）"}], "titleZh": "超音波乳化術中後囊破裂 (PCR) 的臨床特徵、處置與結果", "mustRead": true, "url": "", "reviewed": true, "locked": true, "reviewedAt": "2026-11-11T02:34:13.140Z", "mustRank": 1}, {"id": "pe7f0b458", "cat": "04", "sub": "01", "year": 2025, "title": "Timing of posterior capsular rupture during cataract surgery", "authors": "Narayan A, Neo YN, Lockington D, Day AC", "journal": "Eye", "citation": "Eye. 2025;39:2708–2712", "doi": "10.1038/s41433-025-03942-8", "studyType": "回溯性觀察研究（單一中心，連續病例）", "n": "1,042 眼（皆為 PCR 病例）", "tags": ["PCR", "手術階段", "前囊撕裂", "睫狀溝", "Optic capture"], "conclusion": "PCR 最常發生在乳化階段 (60%)，其次是 I/A (24%)；合併前囊撕裂時，PCR 較常發生在較早的階段，IOL 植入位置也明顯不同。", "about": "英國 Moorfields 眼科醫院回溯 2014–2018 年所有併發 PCR 的白內障手術，共 1,042 眼 (排除合併角膜、青光眼手術或 phacovitrectomy，以及未清楚記錄 PCR 發生階段的病例)。研究把手術分成六個階段：水分離、乳化、I/A、IOL 植入、移除黏彈劑、傷口水合；主要分析 PCR 發生在哪個階段，次要分析前囊撕裂、其他術中併發症與 IOL 植入位置。乳化使用 Alcon Infiniti 或 Centurion，多數病例以雙手式金屬 I/A 頭吸除皮質。", "keyResults": ["PCR 發生階段：乳化 621 眼 (60%)、I/A 248 眼 (24%)、IOL 植入 87 眼 (8%)、移除黏彈劑 44 眼 (4%)、水分離 40 眼 (3%)、傷口水合 2 眼", "合併的術中併發症：玻璃體脫出 80%、前囊撕裂 15%、核或碎片掉入玻璃體 12%、懸韌帶斷裂 5%", "IOL 植入位置：睫狀溝 60%、睫狀溝加 optic capture 19%、囊袋 11%、前房 IOL 2%、維持無水晶體 8%", "有前囊撕裂與前囊完整相比：PCR 發生在水分離或乳化階段的比例為 80% 與 61%；兩組的 PCR 發生階段與 IOL 植入位置分布都有顯著差異（p < 0.01），年齡與性別無差異", "有前囊撕裂者：optic capture 3.9% (vs. 前囊完整 20.7%)、維持無水晶體 19.4% (6.4%)、植入囊袋 4.5% (12.4%）", "最常使用的 IOL 為三片式 MA60AC (79%），其次為單片式 SN60WF (10%）"], "clinical": "乳化與 I/A 合計約占 PCR 的八成，可作為手術訓練與術中風險提醒的重點階段。術中發現前囊撕裂時，後續步驟需留意破裂延伸，並預期 optic capture 的機會較低，可提前準備睫狀溝、前房或鞏膜固定的備案。此為單一中心回溯資料，且沒有 PCR 發生率，不能用來比較不同術式或器械的風險。", "limitations": ["回溯性、單一中心，資料來自電子病歷關鍵字搜尋；只納入 PCR 病例，無法得知 PCR 發生率", "手術階段分類較粗，例如乳化階段沒有細分刻槽、劈核與移除核碎片", "I/A 方式混合雙手式、自動與 Simcoe，器械無法統一", "未分析術者等級、白內障分級與懸韌帶狀況等術前因素"], "authorsView": "作者認為 PCR 最可能發生在乳化階段，與過去文獻一致。早期研究多報告 I/A 階段最常見，作者推測雙手式 I/A 等器械進步可能降低了這個階段的風險，矽膠 I/A 頭也有助於進一步降低風險。作者也認為前囊撕裂會使 PCR 傾向發生在水分離與乳化等較早階段，並影響 IOL 植入位置：前囊與後囊都有破損時，支撐可能不足，因此較多醫師選擇維持無水晶體或植入前房 IOL。\n\n作者另指出，多數後囊破口邊緣看不清楚，發生 PCR 時睫狀溝植入可能比囊袋植入更合適；optic capture 的優點是穩定度較好，且不需調整度數。", "figures": [{"kind": "bar", "title": "PCR 發生在手術的哪個階段（1,042 眼）", "labels": ["水分離", "乳化", "I/A", "IOL 植入", "移除黏彈劑", "傷口水合"], "series": [{"name": "比例", "values": [3.8, 59.6, 23.8, 8.3, 4.2, 0.2]}], "unit": "%", "max": 100, "caption": "乳化與 I/A 合計約占 83%。", "source": "依原文 Table 3 與 Results 數據重繪（Narayan et al., Eye 2025，CC BY 4.0）", "decimals": 1}, {"kind": "bar", "title": "PCR 發生階段：有前囊撕裂 vs 前囊完整", "labels": ["水分離", "乳化", "I/A", "IOL 植入", "移除黏彈劑", "傷口水合"], "series": [{"name": "有前囊撕裂（155 眼）", "values": [8.4, 71.0, 16.1, 3.2, 1.3, 0]}, {"name": "前囊完整（887 眼）", "values": [3.0, 57.5, 25.3, 9.2, 4.7, 0.2]}], "unit": "%", "max": 100, "caption": "有前囊撕裂時，PCR 較集中在水分離與乳化等較早階段（p < 0.01）。", "source": "依原文 Table 4 數據重繪（Narayan et al., Eye 2025，CC BY 4.0）", "decimals": 1}, {"kind": "bar", "title": "IOL 植入位置：有前囊撕裂 vs 前囊完整", "labels": ["睫狀溝", "睫狀溝＋optic capture", "囊袋", "前房 IOL", "維持無水晶體"], "series": [{"name": "有前囊撕裂（155 眼）", "values": [68.4, 3.9, 4.5, 3.9, 19.4]}, {"name": "前囊完整（887 眼）", "values": [58.4, 20.7, 12.4, 2.0, 6.4]}], "unit": "%", "max": 100, "caption": "有前囊撕裂時，optic capture 與囊袋植入明顯較少，維持無水晶體的比例較高（p < 0.01）。", "source": "依原文 Table 4 數據重繪（Narayan et al., Eye 2025，CC BY 4.0）", "decimals": 1}], "titleZh": "白內障手術中後囊破裂發生的時間點", "mustRead": false, "url": "", "reviewed": true, "locked": true, "reviewedAt": "2026-11-11T03:24:05.858Z", "liveFigures": [{"addedAt": "2026-11-11T03:13:30.772Z", "alt": "術中併發症與IOL置放位置", "assetId": "76c14ec33611b7c0d0241dbca20bf940", "caption": "底色標示為本站加註", "editedAt": "2026-11-11T03:23:42.153Z", "kind": "image", "source": "原文 Table 2（Narayan A et al., Eye. 2025;39:2708–2712）", "title": "術中併發症與IOL置放位置"}], "liveOrder": ["b0", "2026-11-11T03:13:30.772Z", "b1", "b2"]}, {"id": "p283d217e", "cat": "04", "sub": "02", "year": 2026, "title": "Advances and Challenges in Sulcus-Implanted Intraocular Lenses: A Comprehensive Narrative Review", "authors": "Romano MR, Savastano A, Keegan D, Toro MD, Vidal-Aroca F, Di Simplicio S, Stanzel B, Fasolino G, Cabrera F, Rizzo S", "journal": "Ophthalmology and Therapy", "citation": "Ophthalmol Ther. 2026;15:1205–1232", "doi": "10.1007/s40123-026-01331-2", "studyType": "敘述性回顧 (Narrative review)", "n": "50 篇研究", "tags": ["睫狀溝", "三片式 IOL", "附加型 IOL", "次發性 IOL", "併發症"], "conclusion": "睫狀溝植入的效果與安全性高度取決於 IOL 設計：三片式與專為睫狀溝設計的附加型IOL表現最好，單片式壓克力 IOL 的併發症風險較高。", "about": "以 PubMed 檢索加上人工追查參考文獻，納入 50 篇報告睫狀溝 IOL 臨床結果的研究，涵蓋三片式鏡片、附加型(supplementary / add-on) 鏡片，以及放在睫狀溝的一般 IOL；適應症包括無水晶體、懸韌帶無力、IOL 脫位、後囊破裂與屈光補強。數值依各研究原始報告呈現，沒有做標準化合併或統計比較。", "keyResults": ["病例選擇適當時，術後視力多改善 0.10–0.30 logMAR，許多研究報告 20/40 或更好", "三片式 IOL：CME 1–8%、色素播散 0–12%、眼壓升高 1–9%", "單片式壓克力 IOL：虹膜摩擦、色素播散、眼壓升高與 UGH 症候群的風險持續較高", "專為睫狀溝設計的附加型鏡片：置中良好、傾斜與偏位低，且可取出", "50 篇中報告各類併發症的研究數：CME 8 篇、視網膜剝離 8 篇、色素播散 5 篇、角膜水腫 4 篇、虹膜摩擦 1 篇、UGH 症候群 1 篇", "一項兒童研究：睫狀溝固定眼的續發性青光眼 28.57%，囊袋固定眼 10.53%（p = 0.007）"], "clinical": "這篇整理了睫狀溝 IOL 的整體證據，與 2009 年 ASCRS 報告的結論一致：單片式壓克力 IOL 不適合放在睫狀溝。由於是敘述性回顧、資料異質性高，文中的百分比較適合當作範圍參考，不宜直接用來比較不同鏡片或技術的優劣。", "limitations": ["敘述性回顧，未依 PRISMA 系統性方法，沒有統合分析或偏差風險評估", "納入研究多為回溯性病例系列，適應症、併發症定義與追蹤時間差異大", "多款附加型鏡片上市時間較短，長期資料有限"], "authorsView": "作者認為睫狀溝植入應視為一系列技術，而非單一手術；鏡片設計、固定方式與病人選擇配合得當時，睫狀溝 IOL 能帶來有意義的視力恢復。作者指出證據不支持把單片式壓克力 IOL 放在睫狀溝；三片式壓克力、矽膠或單片 PMMA 仍是無囊袋支撐時的主要選項。對有殘餘屈光誤差或老花需求的人工水晶體眼，專為睫狀溝設計的附加型鏡片在部分病人可能優於換片或角膜手術。作者呼籲從臨時性的仿單外使用，轉向更標準化的睫狀溝專用平台，並向病人充分說明可逆性與長期的不確定性。", "figures": [{"kind": "bar", "title": "50 篇研究中，報告各類術後併發症的研究篇數", "labels": ["CME", "視網膜剝離", "色素播散", "角膜水腫", "虹膜摩擦", "UGH 症候群"], "series": [{"name": "研究篇數", "values": [8, 8, 5, 4, 1, 1]}], "unit": " 篇", "caption": "這是「有報告該併發症的研究數」，不是發生率，也不能用來比較不同鏡片或技術。", "source": "依原文 Table 3 與 Fig. 2 數據重繪（Romano et al., Ophthalmol Ther 2026，CC BY-NC 4.0）"}], "titleZh": "睫狀溝植入 IOL 的進展與挑戰：全面敘述性回顧", "mustRead": true, "url": "", "reviewed": true, "locked": true, "reviewedAt": "2026-11-11T06:01:30.300Z", "mustRank": 2}, {"id": "p0ebc5bd0", "cat": "04", "sub": "02", "year": 2022, "title": "Three-piece intraocular lens in the sulcus with optic capture in patients with mild to moderate zonular weakness in exfoliation", "authors": "Bhaskaran J, Narayanan S, Balamurali R", "journal": "Indian Journal of Ophthalmology", "citation": "Indian J Ophthalmol. 2022;70:4312–4318", "doi": "10.4103/ijo.IJO_1415_22", "studyType": "回溯性病例系列 (單一中心、單一醫師）", "n": "35 眼 (33 眼完成追蹤）", "tags": ["假性脫皮", "懸韌帶無力", "睫狀溝", "Optic capture", "三片式 IOL"], "conclusion": "假性脫皮合併輕到中度懸韌帶無力的患者，把三片式 IOL 放在睫狀溝並將光學區嵌入前囊口 (Optic capture），平均追蹤 2 年 3 個月沒有發生 IOL 晚期脫位。", "about": "印度單一中心回溯 2017–2022 年 35 位假性脫屑 (exfoliation) 患者，皆有直接或間接的懸韌帶無力證據 (例如水晶體晃動、小瞳孔、褐色核、前房淺）。由同一位醫師以 5–5.25 mm 前囊造口完成乳化後，把三片式疏水性壓克力 IOL 的 haptic 放在睫狀溝，再把光學區推入前囊口後方形成 optic capture；度數與囊袋內 IOL 相同。17 眼使用囊袋張力環(CTR），15 眼使用虹膜勾擴瞳。", "keyResults": ["35 眼中 2 眼失聯，33 眼納入分析；平均年齡 75.2 歲，平均追蹤 2 年 3 個月（4 個月至 5 年）", "CDVA (logMAR) 由術前 1.40 ± 0.92 改善至術後 1 個月 0.38 ± 0.26", "眼壓由術前 15.27 ± 3.89 mmHg 變為術後 1 個月 13.54 ± 4.21 mmHg", "追蹤期間無 IOL 晚期半脫位或脫位，也沒有 PCO、前囊口收縮、明顯色素播散或葡萄膜炎", "術後第 1 天 5 眼出現 Descemet 膜皺褶，皆以保守治療改善；無前囊袋膨脹症候群（capsular distension syndrome）"], "clinical": "對假性脫屑合併輕到中度懸韌帶無力的病例，「三片式 IOL 睫狀溝＋optic capture」是一個不需額外固定裝置的選項，可作為和囊袋張力環、鞏膜固定等方式比較時的參考。此為單一醫師的小型病例系列、沒有對照組，長期防止脫位的效果仍需更多研究確認。", "limitations": ["回溯性、無對照組，樣本小", "單一醫師執行，結果不一定能推廣到其他術者", "術後視力只報告 1 個月的數據，追蹤時間長短不一（部分僅 4 個月）"], "authorsView": "作者認為，haptic 放在睫狀溝提供主要支撐，可減少對已經無力的懸韌帶的依賴；optic capture 則讓 IOL 置中、避免光學區與虹膜接觸，也能防止瞳孔阻滯，度數可沿用囊袋內 IOL 的計算。作者建議：輕到中度懸韌帶無力時，這是理想的做法；嚴重懸韌帶病變則需加上虹膜縫合、鞏膜固定或 Cionni ring 等固定方式；沒有明顯懸韌帶病變、年紀相對較輕（50–60 多歲）的假性脫屑患者，也可考慮此法以預防日後囊袋內 IOL 脫位。", "titleZh": "假性脫皮症候群懸韌帶輕中度無力：三片式 IOL 睫狀溝植入合併 optic capture", "mustRead": false, "url": "", "reviewed": true, "locked": true, "reviewedAt": "2026-11-11T06:11:14.449Z", "liveFigures": [{"addedAt": "2026-11-11T06:10:56.788Z", "alt": "3-Piece IOL 採用Optical capture方法", "assetId": "4e27ba6a806c5d06a33c333b75d40e4a", "caption": "", "fid": "fmwbq0as4", "kind": "image", "source": "原文 Figure 3（Bhaskaran J et al., Indian J Ophthalmol. 2022;70:4312–4318）", "title": "3-Piece IOL 採用Optical capture方法"}], "liveOrder": ["fmwbq0as4"]}, {"id": "pf2d93b2d", "cat": "04", "sub": "02", "year": 2009, "title": "Complications of sulcus placement of single-piece acrylic intraocular lenses: Recommendations for backup IOL implantation following posterior capsule rupture", "authors": "Chang DF, Masket S, Miller KM, Braga-Mele R, Little BC, Mamalis N, Oetting TA, Packer M; ASCRS Cataract Clinical Committee", "journal": "Journal of Cataract & Refractive Surgery", "citation": "J Cataract Refract Surg. 2009;35:1445–1458", "doi": "10.1016/j.jcrs.2009.04.027", "studyType": "專題報告（回溯性病例系列＋文獻回顧）", "n": "30 位患者（30 眼）", "tags": ["睫狀溝", "單片式壓克力 IOL", "UGH 症候群", "備用 IOL", "ASCRS"], "conclusion": "設計為囊袋中使用的 IOL (如單片式壓克力 IOL) 不應放在睫狀溝；每台白內障手術都應備有合適度數、尺寸與設計的備用 IOL。", "about": "ASCRS 白內障臨床委員會 6 位成員回顧 2006–2008 年轉診到其診所、因單片式壓克力 (SPA) IOL 放在睫狀溝而出現併發症的 30 位患者，記錄臨床表現與處置結果，並回顧文獻，整理後囊破裂時備用 IOL 的設計、尺寸與度數建議。這些都是轉診個案，作者本身不在睫狀溝植入 SPA IOL。", "keyResults": ["30 眼中 29 眼為 AcrySof 單片式 IOL，1眼為 Rayner 570C", "併發症 (30 位）：色素播散 25、虹膜透照缺損 24、IOL 邊緣症狀 13、眼壓 > 22 mmHg 10、眼內出血 7、CME 4", "多數患者同時有多種併發症：1 種 2 位、2 種 8 位、3 種 13 位、4 種 4 位、5 種 2 位", "28 眼 (93%) 需要手術處置，其中 25 眼 (83%) 更換 IOL；處置後 17 眼 CDVA 達 20/20", "作者的睫狀溝 IOL 建議：選三片式、haptic 向後傾斜、光學區前緣圓滑；沒有光學區夾持時，選最長的三片式摺疊 IOL，光學區至少 6.0 mm，不建議總長短於 13.0 mm", "度數建議：以 capsulorhexis 夾持光學區時 (Optical Capture)，通常可沿用囊袋計算的度數；整顆 IOL 放在睫狀溝時，度數降低 0.5–1.0 D", "2008 年 AAO 年會現場投票「SPA IOL 能否放睫狀溝」：永遠不行 47%、囊袋支撐足夠時可以 40%、沒有其他 IOL 時可以 11%、縫合固定時可以 2%"], "clinical": "「單片式壓克力 IOL 不放睫狀溝」至今仍是普遍採用的原則，2026 年的睫狀溝敘述性回顧也以這篇作為共識依據。手術室可準備三片式備用 IOL，並參考原文的度數調整原則。各款 IOL 的總長與設計規格不同，選用時仍應以仿單為準。", "limitations": ["轉診病例系列，無法得知睫狀溝植入 SPA IOL 後實際發生併發症的比例", "回溯性資料，CME 可能低報", "未評估三片式 IOL 放在睫狀溝的併發症", "2009 年發表，文中提到的部分 IOL 型號與固定技術已有更新"], "authorsView": "作者認為這些併發症與 SPA IOL 的設計直接相關：haptic 厚而平、不向後傾斜，總長約 13.0 mm，對較大的眼睛太短；表面較黏、光學區邊緣方正，放在睫狀溝容易摩擦虹膜並偏位，引起色素播散、UGH 症候群與慢性發炎。作者建議只設計給囊袋的 IOL 不應放在睫狀溝；後囊破裂時，以三片式 IOL 搭配 Optical Capture 最理想。作者也呼籲每台手術都備妥合適的備用 IOL，並期待業界開發專為無囊袋支撐眼設計的 IOL。", "figures": [{"kind": "bar", "title": "SPA IOL 放在睫狀溝後的併發症（30 位患者）", "labels": ["色素播散", "虹膜透照缺損", "IOL 邊緣症狀", "眼壓 > 22 mmHg", "眼內出血", "CME"], "series": [{"name": "患者數", "values": [25, 24, 13, 10, 7, 4]}], "unit": " 位", "max": 30, "caption": "多數患者同時有 2–3 種併發症；CME 因回溯收集可能低報。", "source": "依原文 Table 3 數據重繪（Chang et al., J Cataract Refract Surg 2009）"}, {"kind": "bar", "title": "2008 年 AAO 年會投票：SPA IOL 能否放在睫狀溝？", "labels": ["永遠不行", "囊袋支撐足夠時可以", "沒有其他 IOL 時可以", "縫合固定時可以"], "series": [{"name": "回答比例", "values": [47, 40, 11, 2]}], "unit": "%", "max": 100, "caption": "2008 年時，臨床上對 SPA IOL 能否放在睫狀溝的意見仍然分歧。", "source": "依原文 Discussion 數據重繪（Chang et al., J Cataract Refract Surg 2009）"}], "titleZh": "單片式壓克力 IOL 植入睫狀溝的併發症：後囊破裂後的備案建議", "mustRead": true, "url": "", "reviewed": true, "locked": true, "reviewedAt": "2026-11-11T05:56:14.021Z", "liveFigures": [{"addedAt": "2026-11-11T05:55:37.112Z", "alt": "從患有色素播散、青光眼和慢性發炎的眼中取出的IOL", "assetId": "65a6257ba139f37d1043db8069ee6093", "caption": "圖中顯示取出的水晶體前表面有大量色素沉澱，尤其是在光學-襻連接處附近。", "fid": "fmwbpgl5k", "kind": "image", "source": "原文 Figure 6（Chang DF et al., J Cataract Refract Surg. 2009;35:1445–1458）", "title": "從患有色素播散、青光眼和慢性發炎的眼中取出的IOL"}], "liveOrder": ["b0", "b1", "fmwbpgl5k"], "mustRank": 1}, {"id": "p7464a8f4", "cat": "04", "sub": "02", "year": 2019, "title": "Intraocular Lens Implantation In The Ciliary Sulcus: Challenges And Risks", "authors": "Mehta R, Aref AA", "journal": "Clinical Ophthalmology", "citation": "Clin Ophthalmol. 2019;13:2317–2323", "doi": "10.2147/OPTH.S205148", "studyType": "文獻回顧（review）", "n": "—", "tags": ["睫狀溝", "三片式 IOL", "度數調整", "Optic capture", "單片式壓克力 IOL"], "conclusion": "囊袋無法使用時，睫狀溝植入是合理的替代方案；選對 IOL、了解睫狀溝解剖並用正確技術，可改善結果並減少併發症。", "about": "這篇回顧整理睫狀溝植入 IOL 的解剖、適應症、IOL 選擇、度數調整、植入技術與併發症。適應症包括後囊破裂、懸韌帶鬆弛、無囊袋的水晶體半脫位，以及計畫中的 piggyback IOL。", "keyResults": ["睫狀溝間距無法直接量測，估計約 11.0–12.5 mm", "最佳選擇：單片 PMMA IOL，或 haptic 細且向後傾斜的三片式 IOL；光學區至少 6 mm、表面平滑邊緣圓鈍，總長至少 13 mm", "不建議：單片式壓克力 IOL（方邊光學區、haptic 厚、總長偏短，易摩擦虹膜，造成色素播散、UGH 症候群與眼壓升高）", "後囊破裂合併玻璃體切除的病例，作者偏好壓克力而非矽膠 IOL，因為日後可能需要矽油", "IOL 整顆放在睫狀溝時，位置比囊袋內前移約 0.5 mm，度數通常需減少 0.50–1.00 D；可用「Rule of 9s」估算", "haptic 在睫狀溝、光學區夾入前囊口（optic capture）時，穩定度較好，度數不需調整", "後囊有缺損時，haptic 應擺在與缺損相差 90 度的方向；懸韌帶缺損少於 3 個鐘點可用 CTR 並把 IOL 放在囊袋內"], "clinical": "這篇適合作為睫狀溝植入的入門整理，特別是 IOL 規格條件與「Rule of 9s」度數調整表，可在手術室備用 IOL 規劃時參考。實際度數仍應依各款 IOL 的 A 常數與醫師經驗調整。", "limitations": ["敘述性回顧，沒有系統性檢索方法或統合分析", "度數調整與 IOL 規格建議多引用教科書與專家意見，證據等級有限"], "authorsView": "作者認為睫狀溝植入很少是首選，而是囊袋無法使用時的可行替代方案。單片式壓克力 IOL 是為囊袋設計，放在睫狀溝會引起慢性問題，許多病例最後需要更換 IOL；作者也指出，業界仍缺少專為無囊袋支撐眼設計的 IOL。正確選擇 IOL、了解睫狀溝解剖並採用正確技術，可以改善結果。", "figures": [{"kind": "table", "title": "睫狀溝植入的 IOL 度數調整：Rule of 9s", "columns": ["囊袋內計算的 IOL 度數", "放在睫狀溝時的調整"], "rows": [["0 至 +9.0 D", "不調整"], ["+9.5 至 +18 D", "減少 0.50 D"], ["+18.5 至 +27 D", "減少 1.00 D"], ["+27.5 D 以上", "減少 1.50 D"], ["haptic 在睫狀溝、光學區夾入囊袋（optic capture）", "不調整"]], "caption": "整顆 IOL 放在睫狀溝時位置較前移，度數需依原始度數高低減少；optic capture 時不需調整。", "source": "整理自原文 Table 1（Mehta & Aref, Clin Ophthalmol 2019，CC BY-NC 3.0）"}], "titleZh": "睫狀溝 IOL 植入的挑戰與風險：綜述"}, {"id": "p1ad8816d", "cat": "04", "sub": "03", "year": 2020, "title": "Intraocular Lens Implantation in the Absence of Zonular Support: An Outcomes and Safety Update. A Report by the American Academy of Ophthalmology", "authors": "Shen JF, Deng S, Hammersmith KM, Kuo AN, Li JY, Weikert MP, Shtein RM", "journal": "Ophthalmology", "citation": "Ophthalmology. 2020;127:1234–1258", "doi": "10.1016/j.ophtha.2020.03.005", "studyType": "AAO 眼科技術評估（文獻回顧）", "n": "45 篇研究（level II 3 篇、level III 42 篇）", "tags": ["無懸韌帶支撐", "ACIOL", "虹膜夾 IOL", "鞏膜縫合", "ISHF", "AAO"], "conclusion": "無懸韌帶支撐時，現有證據顯示沒有任何一種 IOL 植入技術明顯優於其他；各技術的視力結果相近，但各有不同的併發症型態。", "about": "美國眼科醫學會（AAO）的眼科技術評估（OTA），更新 2003 年的版本。檢索 PubMed 與 Cochrane（至 2019 年 7 月）共 734 篇，納入 45 篇追蹤至少 6 個月的研究，比較 8 種技術：前房 IOL（ACIOL）、虹膜夾 IOL、後置虹膜夾 IOL、10-0 聚丙烯虹膜縫合 PCIOL、10-0 與 8-0 聚丙烯鞏膜縫合 PCIOL、CV-8 Gore-Tex 鞏膜縫合 PCIOL，以及鞏膜內 haptic 固定（ISHF，含 Yamane 術式）。各技術的視力與併發症以加權平均整理。", "keyResults": ["45 篇研究的統計檢定力不足以明確比較各技術；質性分析顯示各技術的視力結果不劣於 ACIOL", "CME：10-0 虹膜縫合 PCIOL 16.2%、8-0 鞏膜縫合 13.2%，高於 ACIOL 7.3%；ISHF 4.5%", "慢性葡萄膜炎以 ACIOL 最高（5.6%），非前房技術較少", "慢性青光眼以 8-0 鞏膜縫合最高（13.2%）；ACIOL 6.8% 與 10-0 鞏膜縫合 5.5% 相近", "視網膜剝離：縫合式 PCIOL（虹膜或鞏膜，CV-8 除外）2.0–3.3%，約為非縫合方式（ACIOL、虹膜夾、ISHF，0–0.9%）的 2–3 倍", "瞳孔夾持（pupillary capture）以 ISHF 最高（3.5%）", "8-0 鞏膜縫合研究中，縫合比植入 ACIOL 多花 45–70 分鐘"], "clinical": "這是美國眼科醫學會的官方技術評估，適合用來了解各種無囊袋支撐 IOL 技術的併發症型態。表中的加權平均來自病例系列，且未控制病人條件，宜視為各技術的風險傾向，而不是直接比較優劣的依據。原文也提到，2020 年時虹膜夾 IOL 在美國尚未取得無水晶體的適應症，各國法規不同。", "limitations": ["納入研究多為回溯性病例系列（42 篇為 level III），未控制術前病況嚴重度", "未報告的併發症以 0 計算，實際比例可能被低估", "各技術病例數差異大，例如 8-0 聚丙烯僅 30 眼、CV-8 僅 85 眼", "文獻檢索至 2019 年 7 月，之後發表的研究未納入"], "authorsView": "作者認為現有證據顯示沒有單一技術優於其他，各技術的視力結果與安全性大致相當，但各有其固有的術後併發症風險。虹膜完整時，可在 8 種技術中選擇；由於 10-0 聚丙烯已知會隨時間降解，較粗的縫線理論上可能減少晚期脫位，但仍需更長期的研究證實。作者強調應讓病人了解長期密切追蹤的重要，並呼籲進行大型前瞻性研究。", "figures": [{"kind": "table", "title": "8 種技術的主要併發症（加權平均 %）", "columns": ["技術", "眼數", "CME", "慢性青光眼", "慢性葡萄膜炎", "視網膜剝離"], "rows": [["前房 IOL（angle-supported）", "311", "7.3", "6.8", "5.6", "0.9"], ["虹膜夾 IOL（前房）", "254", "4.2", "0.4", "3.5", "0.4"], ["後置虹膜夾 IOL", "629", "2.8", "1.2", "1.0", "0.7"], ["10-0 聚丙烯虹膜縫合 PCIOL", "639", "16.2", "2.0", "0.2", "2.0"], ["10-0 聚丙烯鞏膜縫合 PCIOL", "1163", "4.8", "5.5", "2.0", "2.2"], ["8-0 聚丙烯鞏膜縫合 PCIOL", "30", "13.2", "13.2", "0", "3.3"], ["CV-8 Gore-Tex 鞏膜縫合 PCIOL", "85", "2", "未報告", "0", "0"], ["鞏膜內 haptic 固定（ISHF）", "1331", "4.5", "0.2", "0.3", "0.5"]], "caption": "未報告的併發症在原文以 0 計算，可能低估；病例條件未控制，不宜直接比較技術優劣。", "source": "整理自原文 Table 4（Shen et al., Ophthalmology 2020）"}, {"kind": "bar", "title": "視網膜剝離比例：縫合式與非縫合式", "labels": ["前房 IOL", "虹膜夾 IOL（前房）", "後置虹膜夾 IOL", "ISHF", "10-0 虹膜縫合 PCIOL", "10-0 鞏膜縫合 PCIOL", "8-0 鞏膜縫合 PCIOL", "CV-8 Gore-Tex 縫合"], "series": [{"name": "視網膜剝離", "values": [0.9, 0.4, 0.7, 0.5, 2.0, 2.2, 3.3, 0]}], "unit": "%", "caption": "除 CV-8 外，縫合式 PCIOL 的視網膜剝離比例約為非縫合方式的 2–3 倍。", "source": "依原文 Table 4 數據重繪（Shen et al., Ophthalmology 2020）"}], "titleZh": "無懸韌帶支撐時的 IOL 植入：AAO 技術評估報告", "mustRead": true, "mustRank": 3}, {"id": "p9f6a2a7d", "cat": "04", "sub": "03", "year": 2026, "title": "Macular and Functional Outcomes After Secondary IOL Implantation Using the Yamane Technique in Aphakia, IOL Subluxation, and IOL Dislocation", "authors": "Visioli G, Albanese GM, Magherini S, et al.", "journal": "Clinical Ophthalmology", "citation": "Clin Ophthalmol. 2026;20:587908", "doi": "10.2147/OPTH.S587908", "studyType": "回溯性研究", "n": "59 眼（無水晶體 13、IOL 半脫位 25、IOL 全脫位 21）", "tags": ["Yamane", "Kowa PU6AS", "CME", "二次植入"], "conclusion": "Yamane 術後的黃斑部與視力結果，在無水晶體、IOL 半脫位、IOL 全脫位三組之間相當。", "about": "Yamane 術式可以用在無水晶體、IOL 半脫位、IOL 全脫位等不同情況，術後結果是否一樣？這篇回溯分析 59 眼（全部使用 Kowa 三片式 PU6AS），追蹤 12 個月，重點看黃斑部併發症（CME、ERM）、視力、散光與內皮細胞變化。", "keyResults": ["3 個月 CME 盛行率 32.2%（19 眼），排除術前已有黃斑病變後，新發 CME 為 10.2%（6 眼）", "12 個月 CME 降至 13.6%（8 眼）；術後新發 ERM 8.5%（5 眼）", "三組 BCVA 皆顯著改善（P < 0.001），主觀散光穩定（P = 0.819）", "內皮細胞密度在半脫位與全脫位組顯著下降，無水晶體組則否", "術前 BCVA 是 12 個月視力改善唯一的獨立預測因子"], "clinical": "評估 Yamane 術後 CME 時，應區分術前已存在與術後新發的病例；需要取出原 IOL 的病例，可能值得更密切追蹤黃斑部。此推論來自單中心回溯資料。", "limitations": ["回溯性、樣本小", "新發 CME 主要與需要取出原 IOL 有關"], "authorsView": "作者認為，Yamane 術後的視網膜與功能結果在無水晶體、IOL 半脫位、全脫位三組之間相當；3 個月時 CME 盛行率有短暫高峰，但新發 CME 有限，且主要與取出原 IOL 有關；視力恢復主要取決於術前視力。", "titleZh": "Yamane 二次植入後的黃斑部與視力結果：無水晶體、半脫位、全脫位比較"}, {"id": "pcb23c033", "cat": "04", "sub": "03", "year": 2021, "title": "A Biomechanical Study of Flanged Intrascleral Haptic Fixation of Three-Piece Intraocular Lenses", "authors": "Ma KK, Yuan A, Sharifi S, Pineda R", "journal": "American Journal of Ophthalmology", "citation": "Am J Ophthalmol. 2021;227:45–52", "doi": "10.1016/j.ajo.2021.02.021", "studyType": "實驗室研究（人類捐贈眼鞏膜）", "n": "4 款三片式 IOL", "tags": ["Yamane", "Flange", "生物力學", "Haptic 材質", "PVDF"], "conclusion": "以 30G 針建立鞏膜隧道時，PVDF haptic 的 CT Lucia 602 flange 脫出力最大（2.04 N），與 haptic 從光學區脫離的力相當；改用 27G 針脫出力明顯下降。", "about": "用人類捐贈眼的鞏膜，模擬 Yamane flange 鞏膜內固定（FISHF）。四款三片式 IOL（CT Lucia 602、Tecnis ZA9003、SofPort LI61AO、AcrySof MA60AC）的 haptic 經 30G 或 27G 針穿過鞏膜，燒灼 haptic 末端 1.0 mm 形成 flange，再用力學測試機量測把 flange 從鞏膜拉出所需的力，並與 haptic 從光學區脫離的力比較。", "keyResults": ["30G 針的 flange 脫出力：CT Lucia 602 2.04 ± 0.24 N，LI61AO 0.93 ± 0.41 N，ZA9003 0.70 ± 0.34 N，MA60AC 0.27 ± 0.19 N（CT Lucia 與其他三款相比皆 P ≤ .001）", "CT Lucia 602 改用 27G 針，脫出力降為 0.56 ± 0.36 N（P < .001）", "haptic 從光學區脫離的力：CT Lucia 602 1.99 N、ZA9003 1.21 N、LI61AO 1.09 N、MA60AC 1.03 N；CT Lucia 與 LI61AO（30G）的 flange 脫出力和脫離力無顯著差異", "flange 脫出力與「flange 直徑／針徑比」高度相關（r = 0.975）", "燒灼 1.0 mm 與 2.0 mm 的 flange 直徑沒有差異（P = .15–.85）；1.0 mm flange 直徑以 PVDF haptic 最大（0.445 mm）"], "clinical": "這篇提供 Yamane 術式中「IOL haptic 材質、針徑與 flange 大小」如何影響固定力的實驗數據，可作為選擇三片式 IOL 與器械時的參考。結果來自離體實驗，臨床上的脫位率仍需以病例研究確認。", "limitations": ["離體實驗、室溫下進行，無法反映活體鞏膜特性與隧道內纖維化的長期變化", "施力方向垂直於鞏膜且為持續拉力，和眼內實際受力（方向不同、反覆施力）不同", "為節省組織，鞏膜隧道比臨床建議的短", "只測試美國常見的四款 IOL"], "authorsView": "作者認為數據支持 PVDF haptic（CT Lucia 602）搭配小口徑器械建立鞏膜隧道時，flange 鞏膜內固定的生物力學穩定性；燒灼 1.0 mm haptic 可能是最佳長度，因為再多燒並不會讓 flange 變大。若必須使用較大口徑的器械建立隧道，應從 IOL 選擇等其他條件補強穩定性。", "figures": [{"kind": "bar", "title": "flange 脫出力 vs haptic 從光學區脫離的力（N）", "labels": ["CT Lucia 602（30G）", "LI61AO（30G）", "ZA9003（30G）", "MA60AC（30G）", "CT Lucia 602（27G）"], "series": [{"name": "flange 脫出力", "values": [2.04, 0.93, 0.7, 0.27, 0.56]}, {"name": "haptic–光學區脫離力", "values": [1.99, 1.09, 1.21, 1.03, 1.99]}], "unit": " N", "decimals": 2, "caption": "同一款 IOL，針徑越小、flange 相對針徑越大，脫出力越高。", "source": "依原文 Table 2 數據重繪（Ma et al., Am J Ophthalmol 2021）"}], "titleZh": "三片式 IOL flange 鞏膜內固定的生物力學研究"}, {"id": "p14c4ed54", "cat": "04", "sub": "03", "year": 2024, "title": "Dislocation force of scleral flange-fixated intraocular lens haptics", "authors": "Stunf Pukl S, Kronschläger M, Ruiss M, Blouin S, Akcan ER, Findl O", "journal": "BMC Ophthalmology", "citation": "BMC Ophthalmol. 2024;24:103", "doi": "10.1186/s12886-024-03369-x", "studyType": "實驗室研究（未固定的人類捐贈眼鞏膜）", "n": "4 款三片式 IOL", "tags": ["Yamane", "Flange", "Haptic 材質", "PVDF", "PMMA"], "conclusion": "以 30G 薄壁針建立 2 mm 鞏膜隧道時，PVDF haptic 形成的蘑菇狀 flange 脫出力（1.58 N）明顯高於 PMMA haptic 的圓錐狀 flange（0.70 N）；改用 27G 針時固定力大幅下降。", "about": "維也納研究團隊在未經固定處理的人類捐贈眼鞏膜上，模擬 Yamane flange 固定。比較兩種 haptic 材質：PVDF（Zeiss CT Lucia 202、Kowa Avansee Preset）與 PMMA（J&J Sensar AR40、Tecnis ZA9003）。以 30G 薄壁針或 27G 一般針建立 2 mm 切線方向的鞏膜隧道，燒灼 haptic 末端 1 mm 形成 flange（PVDF 不夾鑷子，PMMA 以鑷子夾住輔助），再用張力計量測脫出力，並在顯微鏡下量測 flange 大小與形狀。", "keyResults": ["flange 形狀：PVDF 呈蘑菇狀，PMMA 呈圓錐狀", "30G 隧道的脫出力：PVDF 1.58 ± 0.68 N（n = 10），PMMA 0.70 ± 0.14 N（n = 9），p = 0.003", "27G 隧道的脫出力：PVDF 0.31 ± 0.35 N（n = 3），PMMA 0.0 N（n = 4）", "各款 IOL（30G）：CT Lucia 202 1.31 N、Avansee Preset 1.37 N、Sensar AR40 0.99 N、Tecnis ZA9003 0.46 N", "30G 隧道中，flange 大於 384 µm 時，flange 越大脫出力越高（r = 0.92）；燒灼 1 mm haptic 可讓 flange 不小於約 350 µm"], "clinical": "這篇和 Ma 2021 的結論方向一致：haptic 材質（PVDF 優於 PMMA）與小口徑針，是 flange 固定力的重要因素。可作為說明三片式 IOL haptic 材質差異時的參考。實驗中 PVDF 組包含 Kowa Avansee Preset，但結果來自離體實驗，臨床脫位率仍需病例研究確認。", "limitations": ["離體捐贈眼實驗，只能模擬術中與術後早期的穩定度，無法反映鞏膜癒合與纖維化的長期效果", "27G 組樣本數很少（3–4 個）", "捐贈組織取得後隨時間可能出現彈性變化，影響量測"], "authorsView": "作者認為鞏膜隧道的直徑、長度與方向，以及 IOL 種類的選擇，都是 Yamane 固定力的關鍵：30G 薄壁針搭配 PVDF haptic 的脫出力最高。用鑷子輔助製作 PMMA flange，仍無法彌補 PMMA 圓錐狀 flange 較不穩定的缺點。作者建議至少燒灼 1 mm haptic，以確保 flange 不小於約 350 µm；隧道至少 2 mm、flange 確實埋入鞏膜，也有助於避免 flange 外露與術後感染風險。", "figures": [{"kind": "bar", "title": "flange 脫出力：haptic 材質 × 針徑（N）", "labels": ["30G 薄壁針", "27G 一般針"], "series": [{"name": "PVDF haptic", "values": [1.58, 0.31]}, {"name": "PMMA haptic", "values": [0.7, 0.0]}], "unit": " N", "decimals": 2, "caption": "30G 時 PVDF 顯著高於 PMMA（p = 0.003）；27G 時兩者固定力都大幅下降（樣本數少）。", "source": "依原文 Abstract 與 Results 數據重繪（Stunf Pukl et al., BMC Ophthalmol 2024，CC BY 4.0）"}, {"kind": "table", "title": "各款 IOL 的 flange 大小與脫出力（30G 隧道）", "columns": ["IOL", "Haptic 材質", "flange 平均直徑（µm）", "平均脫出力（N）"], "rows": [["Zeiss CT Lucia 202", "PVDF", "376.4", "1.31"], ["Kowa Avansee Preset", "PVDF", "360.6", "1.37"], ["J&J Sensar AR40", "PMMA", "409.1", "0.99"], ["J&J Tecnis ZA9003", "PMMA", "356.3", "0.46"]], "caption": "各款樣本數僅 4–6 個；Sensar AR40 haptic 最粗，flange 也最大。", "source": "整理自原文 Table 1（Stunf Pukl et al., BMC Ophthalmol 2024，CC BY 4.0）"}], "titleZh": "鞏膜 flange 固定 IOL haptic 的脫位拉力"}, {"id": "p95fd232e", "cat": "04", "sub": "03", "year": 2018, "title": "Attaining the optimal flange for intrascleral intraocular lens fixation", "authors": "Kronschläger M, Blouin S, Roschger P, Varsits R, Findl O", "journal": "Journal of Cataract & Refractive Surgery", "citation": "J Cataract Refract Surg. 2018 (Technique)", "doi": "10.1016/j.jcrs.2018.07.042", "studyType": "技術報告（乾式實驗室測試）", "n": "8 款 IOL（每款測 3 次）", "tags": ["Yamane", "Flange", "Haptic 材質", "PVDF", "PMMA"], "conclusion": "flange 形狀取決於 IOL 種類：PVDF haptic 不受鑷子位置影響，部分 PMMA haptic 則需要用鑷子夾在距末端 0.5–1.0 mm 處加熱，才能形成理想的 flange。", "about": "維也納團隊在乾式實驗室中，以燒灼器加熱 8 款 IOL（7 款三片式、1 款單片 PMMA，來自 8 家廠商）的 haptic 末端，比較加熱 0.5 mm 與 1.0 mm、鑷子夾在不同距離（1.0、1.5、3.0 mm）或不使用鑷子時，flange 的形狀與大小，並在顯微鏡下觀察。", "keyResults": ["加熱 0.5 mm 與 1.0 mm 的 flange 形狀相同，但 0.5 mm 的較小", "PVDF haptic（Kowa PN6A、Santen X-70）：不論有沒有鑷子都能形成良好的 flange", "PMMA haptic（NZ-1 EyeCee、Sofport LI61AO、MN60AC、Sensar AR40e）：鑷子離末端越遠，flange 越小；鑷子位置會影響形狀", "無法形成合適 flange：Hoya AF-1 VA-60 BB（三片式）與 AJL P651300（單片 PMMA），末端扁平，加熱後邊緣尖銳不規則", "作者定義理想 flange：蘑菇狀，直徑約為 haptic 的兩倍，長度約 200 µm"], "clinical": "選擇 Yamane 術式用的三片式 IOL 時，haptic 材質與末端形狀會影響 flange 能否做好；PMMA haptic 需要留意鑷子夾持位置。這篇的結果來自 2018 年的乾式測試，部分型號現況可能不同，實際使用前仍應參考最新資料。", "limitations": ["乾式實驗室觀察，沒有量測固定力，也沒有臨床結果", "每款 IOL 只測 3 次，屬描述性結果"], "authorsView": "作者認為不同材質、甚至不同廠商的 PMMA haptic 對加熱的反應都不同，推測與 PMMA 中的添加物有關。蘑菇狀 flange 在鞏膜隧道中固定力最好、滲漏最少。為了做出理想的 flange 並避免風險，作者建議加熱時用一般綁線鑷夾在距 haptic 末端 0.5–1.0 mm 處。", "figures": [{"kind": "table", "title": "各款 IOL 製作 flange 的適合度", "columns": ["IOL", "廠商", "Haptic 材質", "結果"], "rows": [["PN6A", "Kowa", "PVDF", "適合，不受鑷子位置影響"], ["X-70", "Santen", "PVDF", "適合，不受鑷子位置影響"], ["NZ-1 EyeCee", "Nidek", "藍色 PMMA", "適合，受鑷子位置影響"], ["Sofport LI61AO", "Bausch & Lomb", "藍色 PMMA", "適合，受鑷子位置影響"], ["MN60AC", "Alcon", "藍色 PMMA", "適合，受鑷子位置影響"], ["Sensar AR40e", "Johnson & Johnson", "藍色 PMMA", "適合，受鑷子位置影響"], ["AF-1 VA-60 BB", "Hoya", "藍色 PMMA", "不適合（flange 不規則）"], ["P651300（單片）", "AJL", "PMMA", "不適合（flange 不規則）"]], "caption": "「受鑷子位置影響」指需用鑷子夾在距末端 0.5–1.0 mm 處加熱，才能得到理想形狀。", "source": "整理自原文 Table 1 與 Results（Kronschläger et al., J Cataract Refract Surg 2018）"}], "titleZh": "如何做出理想的 flange：鞏膜內 IOL 固定技巧"}, {"id": "peb00603f", "cat": "04", "sub": "03", "year": 2023, "title": "Size variability and fitting of 30-gauge thin-wall needles and 3-piece intraocular lens haptics for the flanged intrascleral fixation technique", "authors": "Stunf Pukl S, Kronschläger M, Ruiss M, Blouin S, Findl O", "journal": "Journal of Cataract & Refractive Surgery", "citation": "J Cataract Refract Surg. 2023;49:874–878", "doi": "10.1097/j.jcrs.0000000000001210", "studyType": "實驗室研究（顯微量測）", "n": "5 款 30G 薄壁針、5 款三片式 IOL", "tags": ["Yamane", "30G 薄壁針", "Haptic 直徑", "雙針技術"], "conclusion": "不同廠牌的 30G 薄壁針內徑差異明顯，三片式 IOL 的 haptic 粗細也不同；多數組合都能套入，但 Sensar AR40 搭配 Meso-relle 或 Sterimedix 針可能套不進去。", "about": "Yamane 雙針術式需要把 IOL haptic 末端套入 30G 薄壁針管內再拉出眼外，針的內徑和 haptic 粗細是否吻合會影響手術順利度。維也納團隊在顯微鏡下量測 5 個廠牌 30G 薄壁針（每廠牌 10–20 支）的內徑、外徑與管壁厚度，以及 5 款三片式 IOL 的 haptic 末端直徑，並以 micro-CT 驗證量測結果。", "keyResults": ["針的內徑：T-lab 最大（209.3 ± 8.0 µm），其次 TSK 194.8、MST 194.7、Sterimedix 187.5，Meso-relle 最小（178.7 ± 7.0 µm）", "針的外徑：T-lab 最大（316.0 ± 2.0 µm），其他約 306–311 µm", "haptic 直徑：Kowa Avansee Preset 最細（127.2 ± 0.7 µm）；Tecnis ZA9003 143.5、CT Lucia 202 143.8、AcrySof MA60AC 143.9 µm；Sensar AR40 最粗（170.7 ± 1.7 µm）", "同一廠牌、同一批號的針，內徑也有變異", "TSK 與 MST 針變異最小、內徑夠大且外徑小；作者所屬醫院之後改用 TSK"], "clinical": "準備 Yamane 手術時，針的廠牌與 IOL haptic 粗細需要一起考慮，術前試套是簡單的確認方式。文中對 Avansee Preset flange 製作方式的提醒，可作為使用細 haptic IOL 時的參考；這項提醒是作者依先前研究的推論，需再以固定力與臨床研究確認。", "limitations": ["每個廠牌的針都來自同一批號，無法排除不同批號之間的差異", "只量測尺寸與理論上能否套入，沒有評估手術結果"], "authorsView": "作者認為 30G 薄壁針的管壁厚度差異會造成內徑不同，加上 haptic 粗細不一，可能讓 haptic 難以套入針內。較大的針內徑搭配較細的 haptic，術中套入會比較容易；Sensar AR40 應搭配 MST、TSK、T-lab 30G 針或 27G 針。作者另提醒，Avansee Preset 的 haptic 較細，若用鑷子夾在 1 mm 處加熱，flange 可能小於 300 µm 而無法確實封住鞏膜隧道，建議用不夾鑷子的方式製作 flange。若不清楚所用針與 IOL 的尺寸，建議手術前先試套。", "figures": [{"kind": "bar", "title": "5 款 30G 薄壁針的內徑（µm）", "labels": ["T-lab", "TSK", "MST", "Sterimedix", "Meso-relle"], "series": [{"name": "平均內徑", "values": [209.3, 194.8, 194.7, 187.5, 178.7]}], "unit": " µm", "decimals": 1, "caption": "內徑越大，haptic 越容易套入；T-lab 顯著大於其他廠牌，Meso-relle 顯著較小。", "source": "依原文 Table 1 數據重繪（Stunf Pukl et al., J Cataract Refract Surg 2023）"}, {"kind": "bar", "title": "5 款三片式 IOL 的 haptic 末端直徑（µm）", "labels": ["Sensar AR40", "AcrySof MA60AC", "CT Lucia 202", "Tecnis ZA9003", "Avansee Preset"], "series": [{"name": "平均直徑", "values": [170.7, 143.9, 143.8, 143.5, 127.2]}], "unit": " µm", "decimals": 1, "caption": "Sensar AR40 最粗，可能套不進內徑較小的針；Avansee Preset 最細。", "source": "依原文 Table 2 數據重繪（Stunf Pukl et al., J Cataract Refract Surg 2023）"}], "titleZh": "30G 薄壁針與三片式 IOL haptic 的尺寸差異與匹配", "url": "https://pubmed.ncbi.nlm.nih.gov/37114673/"}, {"id": "p427213b8", "cat": "04", "sub": "03", "year": 2024, "title": "Recent advances and current challenges in suture and sutureless scleral fixation techniques for intraocular lens: a comprehensive review", "authors": "Sun H, Wang C, Wu H", "journal": "Eye and Vision", "citation": "Eye Vis (Lond). 2024;11:49", "doi": "10.1186/s40662-024-00414-0", "studyType": "敘述性回顧（review）", "n": "—", "tags": ["鞏膜固定", "縫線固定", "無縫線固定", "Yamane", "Gore-Tex"], "conclusion": "縫線與無縫線鞏膜固定各有優缺點與特定併發症；無縫線鞏膜內固定的脫位率低，但技術差異大，超過 3 年的資料有限，IOL 與術式需依個案選擇。", "about": "吉林大學第二醫院的綜合回顧，依時間順序整理過去二十年後房 IOL 鞏膜固定的各種術式：縫線固定（10-0、9-0、8-0 polypropylene、Gore-Tex、四點固定、無結縫合等）與無縫線固定（Gabor 鞏膜隧道、Agarwal 膠固定、Yamane flange 及其改良法、雷射製作 flange 等），比較各自的操作細節、優缺點、術後併發症與結果，並討論 IOL 選擇。", "keyResults": ["10-0 polypropylene 縫線的長期穩定性不理想：Vote 等人追蹤 60 個月，27.9% 縫線斷裂，平均約在術後 4 年", "Gore-Tex 縫線抗拉力高、沒有降解的報告，但術後 CME 發生率在各研究間差異大（2%–38.5%）", "Yamane flange 鞏膜內固定自 2017 年提出後，成為囊袋支撐不足時的首選之一；瞳孔夾持在 Yamane 原始文獻中可達 8%", "瞳孔夾持的可能機制：玻璃體缺損、虹膜鬆軟、前房加深、反向瞳孔阻滯，以及 IOL 位置不良", "無縫線改良術式的研究多為小樣本、短期追蹤，難以直接比較安全性"], "clinical": "這篇適合作為鞏膜固定術式的總覽，特別是縫線材料（10-0、8-0 polypropylene 與 Gore-Tex）的差異整理。文中引用的數字來自不同研究，適合作為範圍參考，比較個別術式時建議回到原始研究。", "limitations": ["敘述性回顧，沒有系統性檢索或統合分析", "各術式的研究設計與追蹤時間差異大，數據不能直接比較"], "authorsView": "作者認為縫線固定的優點是符合眼部解剖、適應症廣，但有縫線外露、降解、鬆脫導致 IOL 脫位或傾斜等晚期問題，對兒童尤其值得注意；無縫線鞏膜內固定因侵入性低而受到重視，但需確保 haptic 完全退入隧道，以避免低眼壓與 haptic 外露。作者強調長期結果仍不明確，需要大型、多中心、長期追蹤研究，並依病人眼部條件個人化選擇術式與 IOL。", "titleZh": "縫線與無縫線鞏膜固定 IOL 技術的進展與挑戰：綜述"}, {"id": "p9fa37149", "cat": "04", "sub": "03", "year": 2024, "title": "Long-term functional outcome between Yamane technique and retropupillary iris-claw technique in a large study cohort", "authors": "Guerin PL, Guerin GM, Pastore MR, Gouigoux S, Tognetto D", "journal": "Journal of Cataract & Refractive Surgery", "citation": "J Cataract Refract Surg. 2024;50:605–610", "doi": "10.1097/j.jcrs.0000000000001421", "studyType": "回溯性觀察研究", "n": "116 眼（Yamane 58、虹膜夾 58）", "tags": ["Yamane", "Iris-claw", "屈光預測誤差", "二次植入"], "conclusion": "Yamane 與後房虹膜夾 IOL 的視力改善相當，但 Yamane 的屈光結果較不可預測，術後偏遠視。", "about": "沒有囊袋支撐時，Yamane 鞏膜內固定與後房虹膜夾 IOL 是兩種常見選擇。這篇回溯比較 116 眼（兩組各 58 眼），平均追蹤 12–14 個月，比較視力、併發症與屈光預測準確度。", "keyResults": ["兩組 CDVA 改善無顯著差異，併發症率也無顯著差異", "屈光預測誤差：Yamane 0.69 ± 0.94 D，虹膜夾 0.21 ± 0.75 D（P = 0.03）", "屈光誤差落在 ±0.50 D 內：虹膜夾 52%，Yamane 31%"], "clinical": "使用 Yamane 時，度數規劃需留意術後偏遠視的可能。具體的度數調整方式，可參考「生物量測與計算」主題中鞏膜固定度數計算的研究。", "limitations": ["回溯性、非隨機分組", "術式選擇可能受醫師偏好與病況影響"], "authorsView": "作者認為兩種術式都能有效改善視力，併發症率沒有顯著差異，但 Yamane 的屈光結果較不可預測；作者不建議像睫狀溝植入那樣，調降三片式 IOL 的度數來預防近視偏移。", "titleZh": "Yamane vs 後房虹膜夾 IOL：長期視力與屈光預測比較"}, {"id": "p95432283", "cat": "04", "sub": "03", "year": 2024, "title": "Clinical Outcomes in Scleral Fixation Secondary Intraocular Lens with Yamane versus Suture Techniques: A Systematic Review and Meta-Analysis", "authors": "Zhang C, Palka C, Zhu D, et al.", "journal": "Journal of Clinical Medicine", "citation": "J Clin Med. 2024;13:3071", "doi": "10.3390/jcm13113071", "studyType": "系統性回顧與 meta-analysis", "n": "13 篇研究，737 眼（縫線固定 406、Yamane 331）", "tags": ["Yamane", "縫線鞏膜固定", "Meta-analysis", "手術時間"], "conclusion": "Yamane 與傳統縫線鞏膜固定的長期視力與併發症相當，但 Yamane 手術時間較短，在有經驗的醫師手中視力恢復更快。", "about": "Yamane 與傳統縫線鞏膜固定，哪一個比較好？這篇統合分析 13 篇研究、737 眼，比較兩種術式的最終視力、早期視力恢復、內皮細胞、屈光誤差、手術時間與併發症，並依醫師經驗分組。", "keyResults": ["最終 BCVA（3–12 個月）無顯著差異：MD −0.01（95% CI −0.06 至 0.04，P = 0.73）", "單一醫師研究中，術後 1 個月 BCVA 以 Yamane 較佳：MD −0.10 logMAR（P = 0.002）", "Yamane 手術時間平均短約 25 分鐘：MD −24.68 分鐘（P < 0.0001）", "內皮細胞數、屈光誤差、併發症率皆無顯著差異"], "clinical": "兩種術式的長期結果相近，選擇時可考量手術時間與醫師熟悉度。醫師經驗對早期恢復的影響，是以平均手術量分組推估，證據力有限。", "limitations": ["納入研究多為回溯性，異質性高", "以平均手術量區分醫師經驗，定義較粗略"], "authorsView": "作者認為 Yamane 與傳統縫線鞏膜固定的長期視力與併發症率相近；在單一醫師（經驗較多）的研究中，Yamane 的視力恢復較快，且各類研究中 Yamane 的手術時間都較短。", "titleZh": "Yamane vs 縫線鞏膜固定：二次植入臨床結果的統合分析", "mustRead": true, "mustRank": 2}, {"id": "p2b16cfda", "cat": "04", "sub": "03", "year": 2025, "title": "Results of Yamane Scleral Intraocular Lens Fixation Using Extraocular Docking of the Trailing Haptic", "authors": "Saeki T, Koutari S, Hayashi T, Yokota H, Yamagami S, Mackool R", "journal": "Retina", "citation": "Retina. 2025;45:2435–2440", "doi": "", "studyType": "回溯性病例系列（單一醫師，手術技術報告）", "n": "20 眼", "tags": ["Yamane", "改良術式", "Trailing haptic", "Kowa Avansee", "鞏膜固定"], "conclusion": "把 trailing haptic 在眼外套入 30G 針（extraocular docking）的改良 Yamane 術式，20 眼術後視力改善、屈光誤差接近目標，IOL 平均傾斜 5.57°、偏位 0.50 mm。", "about": "日本大學（Nihon University）回溯 2023–2024 年由同一位醫師執行的 20 眼鞏膜固定（IOL 脫位 13 眼、水晶體半脫位 4 眼、無水晶體 3 眼）。Yamane 術式最難的一步是在眼內把 trailing haptic 套入針管；這個改良法改成把 trailing haptic 留在眼外，直接套入已從主切口穿出的 30G 針，再隨針拉回鞏膜隧道，最後照常燒灼 flange。所有病例皆合併 25G 玻璃體切除，使用 Kowa Avansee 三片式 IOL（原文摘要寫 AN6A、內文寫 AN6KA），度數以 Barrett Universal II 計算。", "keyResults": ["BCVA：術前 20/32 → 術後 20/20；logMAR 由 0.19 ± 0.42 改善至 −0.02 ± 0.10（P = 0.011）", "角膜內皮細胞密度：2,282 → 2,091 cells/mm²（平均減少 190 cells/mm²，P = 0.008）", "術後屈光誤差 −0.13 ± 1.40 D（−3.5 至 +2.2 D）", "IOL 位置（AS-OCT，18 眼）：傾斜 5.57 ± 3.35°，偏位 0.50 ± 0.26 mm", "眼壓術前 14.38、術後 13.84 mmHg，無顯著變化", "併發症：玻璃體出血 2 眼（自行吸收）、輕度 IOL 虹膜夾持 1 眼（以 YAG 雷射處理）；平均追蹤 5.4 ± 4.2 個月"], "clinical": "這篇提供一種降低 Yamane 學習門檻的改良方式，可作為介紹改良術式時的參考。研究使用 Kowa Avansee 三片式 IOL，但樣本小、追蹤短，且由技術開發者團隊執行，結果能否推廣到其他醫師仍待確認。", "limitations": ["單一醫師、病例數少（20 眼），無對照組", "追蹤時間短（平均 5.4 個月，最短 0.2 個月），無法評估長期穩定性"], "authorsView": "作者認為眼外套針可以省去原始 Yamane 術式中最困難的眼內套針步驟，讓術式更簡單、容易學習；整體臨床結果良好，屈光可預測性穩定，IOL 傾斜與偏位不劣於先前文獻。作者也提到，PVDF haptic 比較耐彎折，使用其他 haptic 材質的 IOL 時，需要更小心避免 trailing haptic 過度彎折。作者認為仍需更多研究確認此法的可重複性。", "figures": [{"kind": "table", "title": "術前與術後主要測量值（20 眼）", "columns": ["項目", "術前", "術後", "P 值"], "rows": [["BCVA（logMAR）", "0.19 ± 0.42", "−0.02 ± 0.10", "0.011"], ["眼壓（mmHg）", "14.38 ± 3.36", "13.84 ± 3.05", "0.418"], ["角膜內皮細胞密度（cells/mm²）", "2,282 ± 575", "2,091 ± 560", "0.008"], ["屈光誤差（D）", "—", "−0.13 ± 1.40", "—"], ["IOL 傾斜（°，18 眼）", "—", "5.57 ± 3.35", "—"], ["IOL 偏位（mm，18 眼）", "—", "0.50 ± 0.26", "—"]], "caption": "平均追蹤 5.4 個月；內皮細胞密度有顯著下降。", "source": "整理自原文 Table 2（Saeki et al., Retina 2025，CC BY-NC-ND 4.0）"}], "titleZh": "Yamane 改良術式：後側 haptic 眼外對接的結果"}, {"id": "pe50a259d", "cat": "04", "sub": "03", "year": 2017, "title": "Flanged Intrascleral Intraocular Lens Fixation with Double-Needle Technique", "authors": "Yamane S, Sato S, Maruyama-Inoue M, Kadonosono K", "journal": "Ophthalmology", "citation": "Ophthalmology. 2017", "doi": "10.1016/j.ophtha.2017.03.036", "studyType": "前瞻性非對照病例系列", "n": "100 眼（97 位患者）", "tags": ["Yamane", "原始術式", "Flange", "Kowa PN6A"], "conclusion": "Yamane 雙針 flange 鞏膜內固定是簡單、微創且固定牢靠的二次 IOL 植入方法。", "about": "這是 Yamane 雙針 flange 鞏膜內固定的原始文獻。橫濱市立大學前瞻性追蹤 100 眼，用兩支 30G 薄壁針把三片式 IOL 的 haptic 拉出眼外，燒灼末端形成 flange 後推回鞏膜隧道，不需縫線就能固定 IOL。", "keyResults": ["BCVA 從術前 0.25 logMAR 改善至 6、12、24、36 個月的 0.11、0.09、0.12、0.04 logMAR", "平均 IOL 傾斜 3.4° ± 2.5°", "併發症：Iris Capture 8%、玻璃體出血 5%、CME 1%；無視網膜剝離、眼內炎或 IOL 脫位", "Iris Capture：7 mm 光學區 IOL (X-70) 2.0%，6 mm 光學區 IOL (ZA9003、PN6A、MA60MA）14.0% (P = 0.06）"], "clinical": "IOL 置中良好、平均傾斜 3.4°，視力顯著改善，36 個月內沒有視網膜剝離、眼內炎或 IOL 脫位。主要併發症是 Iris Capture (8%)，6mm 光學區 IOL 比 7mm 多 (14% vs 2%，未達統計顯著)。", "limitations": ["無對照組", "後期追蹤人數逐漸減少"], "authorsView": "作者認為，flange 鞏膜內固定是簡單、微創的技術，haptic 固定牢靠。", "figures": [{"kind": "line", "title": "Yamane 術後的 BCVA 變化（logMAR，數值越低越好）", "labels": ["術前", "6 個月", "12 個月", "24 個月", "36 個月"], "series": [{"name": "平均 BCVA", "values": [0.25, 0.11, 0.09, 0.12, 0.04]}], "decimals": 2, "lowerBetter": true, "min": 0, "caption": "6、12、24 個月皆顯著優於術前（P < 0.01）；36 個月與術前的差異未達統計顯著（P = 0.17）。", "source": "依原文 Abstract 與 Results 數據重繪（Yamane et al., Ophthalmology 2017）"}, {"kind": "bar", "title": "虹膜夾持（iris capture）比例：依 IOL 光學區大小", "labels": ["7 mm 光學區（X-70）", "6 mm 光學區（ZA9003、PN6A、MA60MA）"], "series": [{"name": "虹膜夾持", "values": [2.0, 14.0]}], "unit": "%", "caption": "6 mm 光學區 IOL 的虹膜夾持較多，但差異未達統計顯著（P = 0.06）。", "source": "依原文 Results 數據重繪（Yamane et al., Ophthalmology 2017）"}], "titleZh": "Yamane 原始術式：雙針 flange 鞏膜內 IOL 固定", "mustRead": true, "url": "", "reviewed": true, "locked": true, "reviewedAt": "2026-11-11T03:27:08.352Z", "liveFigures": [{"addedAt": "2026-11-11T01:47:42.110Z", "alt": "術後3個月影像", "assetId": "a6959206d404ef806e8f18ec4d2ea7ac", "caption": "A, 裂隙燈下觀察並未有明顯疤痕或是發炎反應. B, OCT 影像 IOL 呈現無偏移或傾斜. C, 人工水晶體 Haptic 的凸緣 (箭頭) 固定在鞏膜 (通道) 中，OCT 影像顯示人工水晶體襻周圍和鞏膜沒有間隙。", "editedAt": "2026-11-11T01:53:09.122Z", "kind": "image", "source": "原文 Figure 2（Yamane S et al., Ophthalmology. 2017）", "title": "術後3個月影像"}], "liveOrder": ["b0", "2026-11-11T01:47:42.110Z", "b1"], "mustRank": 1}, {"id": "p3603b01c", "cat": "04", "sub": "03", "year": 2026, "title": "Standardizing the Yamane flanged intrascleral haptic fixation: A framework for efficacy, complication mitigation, and reproducible training", "authors": "Usta Küçükbezirci G, Gürcan B, Patel N, Ramsey DJ, Alwreikat A", "journal": "World Journal of Methodology", "citation": "World J Methodol. 2026;16(3):120949", "doi": "10.5662/wjm.120949", "studyType": "方法學小型回顧（minireview）", "n": "—", "tags": ["Yamane", "標準化", "手術步驟", "教學訓練", "併發症"], "conclusion": "Yamane 術式概念簡單，但結果穩定與否取決於對稱的鞏膜隧道、適當的針、輕柔的 haptic 操作與均勻的 flange；作者提出標準化的步驟清單與手術參數，以提升可重複性與研究可比較性。", "about": "土耳其與美國 Tufts 大學作者整理 Yamane 原始描述、後續力學研究與臨床研究，以技術導向的方式逐步說明 Yamane flange 鞏膜內固定的關鍵步驟：針徑、針斜面方向、進針角度、對稱隧道、隧道長度、haptic 拉出與 flange 製作，並討論各步驟與術後 IOL 位置、穩定度的關係，提出步驟檢查表與標準參數。", "keyResults": ["建議參數：30G 針；進針點距角膜緣 2.0–2.5 mm；兩側相隔 180 度；與角膜緣約 20 度、與虹膜面約 5 度；鞏膜內隧道 ≥ 2.0 mm", "flange 直徑目標 0.3–0.5 mm，建議低溫、短暫燒灼，避免 haptic 變脆", "手術結束前確認 flange 完全退入隧道，並在顯微鏡下確認 IOL 置中與傾斜", "文獻中 CME 發生率差異大（< 5% 到 > 25%）；視網膜剝離約 2%–5%，多見於原有玻璃體視網膜病變或玻璃體未完全切除的眼睛", "瞳孔夾持與虹膜摩擦多見於前房淺或光學區位置不夠後方的眼睛；多數已發表系列沒有眼內炎", "與縫線鞏膜固定相比，屈光穩定度大致相當，機械性併發症可能較少"], "clinical": "這篇的步驟檢查表與參數表，適合作為教學或術前準備的參考框架。需要注意，檢查表中建議使用 PMMA haptic 的三片式 IOL，與其他力學研究偏好 PVDF haptic 的結論不同；各項參數屬作者整理的建議，實際操作仍需依醫師經驗與器械調整。", "limitations": ["專家意見式的方法學回顧，沒有系統性檢索或統合分析", "引用的證據多為小樣本回溯性病例系列，缺乏隨機對照試驗", "建議參數是作者整理的共識性建議，不同研究的做法並不一致（例如 IOL haptic 材質的選擇）"], "authorsView": "作者認為 Yamane 已成為無囊袋支撐時可靠的無縫線鞏膜固定選擇，但步驟上的小差異會明顯影響 IOL 置中、穩定度與併發症；多數併發症可透過對稱操作、輕柔處理組織與術中確認穩定度來預防。學習曲線也會影響早期結果。作者呼籲統一手術步驟與結果報告方式，以縮短學習曲線並提升多中心研究的品質。", "figures": [{"kind": "table", "title": "Yamane 術式的標準化手術參數", "columns": ["參數", "建議值", "理由"], "rows": [["針徑", "30G", "與一般 haptic 直徑相符，減少鞏膜創傷"], ["進針點距角膜緣", "2.0–2.5 mm", "避開睫狀體，確保足夠的固定深度"], ["進針角度", "與角膜緣約 20°、與虹膜面約 5°", "形成 ≥ 2.0 mm 的隧道以穩定固定 haptic"], ["鞏膜內隧道長度", "≥ 2.0 mm", "降低 haptic 滑脫與 IOL 脫位風險"], ["兩針位置", "相隔 180°", "確保置中、減少術後傾斜"], ["針斜面方向", "斜面朝上（依醫師習慣）", "方便套入 haptic、減少變形"], ["flange 直徑", "0.3–0.5 mm", "防止滑脫，同時避免過度熱損傷"], ["燒灼方式", "低溫、短暫接觸", "避免 haptic 變脆或斷裂"]], "caption": "作者整理的建議參數，各研究的實際做法可能不同。", "source": "整理自原文 Table 5（Usta Küçükbezirci et al., World J Methodol 2026，CC BY-NC 4.0）"}], "titleZh": "Yamane flange 鞏膜內固定的標準化：療效、併發症預防與教學架構"}, {"id": "pa9da44dd", "cat": "04", "sub": "03", "year": 2025, "title": "Intraocular lens stability and factors affecting refractive error following modified Yamane technique without trimmed haptics", "authors": "Koutari S, Hayashi T, Fujiwara K, Aso H, Yokota H, Yuda K, Saeki T, Yamagami S", "journal": "European Journal of Ophthalmology", "citation": "Eur J Ophthalmol. 2025", "doi": "10.1177/11206721251357124", "studyType": "回溯性比較研究（兩位醫師）", "n": "44 眼（每位醫師 22 眼）", "tags": ["Yamane", "屈光誤差", "前房深度", "不修剪 haptic", "Kowa Avansee"], "conclusion": "不修剪 haptic 的改良 Yamane 術式，IOL 置中與屈光穩定度不劣於先前文獻；兩位醫師的術後屈光傾向不同，術後前房深度（AQD）是影響屈光誤差的主要因素。", "about": "日本大學回溯 2019–2024 年兩位醫師各 22 眼的鞏膜固定（IOL 脫位 27 眼、水晶體半脫位 12 眼、無水晶體 5 眼）。皆合併玻璃體切除，以彎折約 60 度的 30G TSK 薄壁針建立隧道，兩側 haptic 直接在眼內套針，haptic 不修剪，使用 Kowa Avansee 三片式 IOL（PVDF haptic）；醫師 A 進針點距角膜緣 1.5 mm、醫師 B 為 1.75 mm。以 AS-OCT 量測 IOL 傾斜、偏位與 AQD，分析影響屈光誤差的因素。", "keyResults": ["術後 BCVA（logMAR）：醫師 A 0.23 ± 0.40、醫師 B 0.22 ± 0.41，兩者無差異；全體 BCVA、眼壓與內皮細胞數術前術後皆有顯著變化", "IOL 傾斜：醫師 A 6.33 ± 3.8°、醫師 B 5.51 ± 3.17°；偏位：0.46 ± 0.22 mm 與 0.49 ± 0.24 mm", "術後屈光誤差：醫師 A 偏遠視（+0.43 D），醫師 B 偏近視（−0.18 D）；兩位醫師只有 AQD 有顯著差異（P = 0.007）", "AQD 越大，屈光誤差越偏遠視：單變項迴歸 P = 0.016，多變項迴歸 P = 0.007；多變項中傾斜也達顯著（P = 0.047）", "併發症：玻璃體出血 3 眼、IOL 虹膜夾持 4 眼（醫師 A 3 眼、醫師 B 1 眼）；平均追蹤 4.6 ± 3.8 個月", "多數病例從植入到固定可在 5 分鐘內完成"], "clinical": "Yamane 術後的屈光誤差，除了公式之外，也和進針位置、角度與隧道長度造成的 IOL 前後位置有關。這篇可作為說明「術式標準化影響屈光結果」的參考。研究使用 Kowa Avansee 三片式 IOL，樣本小、追蹤短，結論仍需更多研究確認。", "limitations": ["只有兩位醫師、樣本數小，術式細節（進針角度、隧道長度）因人而異", "追蹤時間短，無法評估長期穩定性", "原文摘要與內文的屈光誤差標準差不一致（摘要 0.75／1.35 D，內文 0.23 D）", "與同團隊 Saeki 2025（Retina）的收案期間與機構重疊"], "authorsView": "作者認為這個不修剪 haptic 的改良術式簡單、可重複，整體穩定度良好；PVDF haptic 柔軟且形狀記憶佳，可能有助於 haptic 與光學區連接處的穩定。兩位醫師的屈光差異主要來自術後 AQD：進針角度越陡，IOL 位置越深、越偏遠視。作者建議未來使用雙針導引器等方式標準化進針角度與隧道長度。", "figures": [{"kind": "table", "title": "兩位醫師的術後結果比較", "columns": ["項目", "醫師 A（22 眼）", "醫師 B（22 眼）"], "rows": [["進針點距角膜緣", "1.5 mm", "1.75 mm"], ["術後 BCVA（logMAR）", "0.23 ± 0.40", "0.22 ± 0.41"], ["IOL 傾斜（°）", "6.33 ± 3.8", "5.51 ± 3.17"], ["IOL 偏位（mm）", "0.46 ± 0.22", "0.49 ± 0.24"], ["術後屈光誤差（D）", "+0.43", "−0.18"], ["IOL 虹膜夾持", "3 眼", "1 眼"]], "caption": "兩位醫師只有術後前房深度（AQD）有顯著差異（P = 0.007），AQD 較大者屈光偏遠視。", "source": "整理自原文 Abstract 與 Results（Koutari et al., Eur J Ophthalmol 2025）"}], "titleZh": "改良 Yamane（不修剪 haptic）：IOL 穩定性與屈光誤差影響因素"}, {"id": "p7ec0b9dc", "cat": "04", "sub": "03", "year": 2025, "title": "Long-term Clinical Outcomes of a Modified Yamane Technique for Intrascleral Sutureless Posterior Chamber Intraocular Lens Fixation", "authors": "Xu F, Jiang H, Mu J, Yang N, Guo W, Sun C, Peng B, Zhang M, Fan W", "journal": "American Journal of Ophthalmology", "citation": "Am J Ophthalmol. 2026;282:187–196", "doi": "10.1016/j.ajo.2025.11.003", "studyType": "前瞻性連續病例系列", "n": "75 眼（69 位患者）", "tags": ["Yamane", "25G 針", "長期追蹤", "Flange 外露", "AS-OCT"], "conclusion": "以 25G 針建立隧道的改良 Yamane 術式，中位追蹤 3.3 年（最長 7 年）沒有 IOL 脫位；14% 的 flange 露出隧道外，flange 越大、白到白距離越小，外露風險越高。", "about": "四川大學華西醫院前瞻性收錄 69 位患者、75 眼接受改良 Yamane 術式（以 25G 針建立鞏膜隧道、使用 J&J Sensar AR40e 三片式 IOL），追蹤至少 1 年。以 AS-OCT（CASIA2）量測 haptic 沿鞏膜隧道三個位置的鞏膜厚度、與鄰近部位比較，並評估 flange 外露到結膜下時的結膜厚度，以及影響 flange 外露的因素。", "keyResults": ["中位追蹤 3.3 年（1.1–7.0 年，16 眼超過 5 年），無 IOL 脫位，也沒有角膜內皮失代償、視網膜剝離或眼內炎", "logMAR：裸視由 1.34 ± 0.75 改善至 0.48 ± 0.47，矯正視力由 0.31 ± 0.28 改善至 0.16 ± 0.25（皆 P < .001）；74.7% 最終矯正視力優於 0.3 logMAR", "屈光預測誤差 −0.19 ± 1.27 D；眼壓無顯著變化；內皮細胞密度下降 13.5%（2,351 → 2,033 cells/mm²）", "flange 端與隧道中段的鞏膜明顯增厚；追蹤超過 5 年的眼睛，haptic 周圍鞏膜沒有持續變薄", "flange 外露率 14.0%（21/150 個），外露處結膜明顯較薄，但沒有結膜破損", "多變項分析：白到白距離較大是保護因子（OR 0.082，P = .017），flange 直徑較大是危險因子（OR 1.012，P = .023）；最佳切點分別為 11.38 mm 與 460 µm", "併發症：早期暫時性角膜水腫 14.7%、IOL 瞳孔夾持早期 12.0%／晚期 6.7%、眼壓升高早期 6.7%／晚期 5.3%、CME 1 眼"], "clinical": "這篇提供 Yamane 類術式少見的長期（中位 3.3 年）追蹤資料，可作為說明術式長期穩定性的參考。外露風險與 flange 大小、眼球大小有關，提示 flange 製作與 haptic 長度需依眼睛條件調整。研究使用 25G 針與 PMMA haptic 的 AR40e，與原始 30G 薄壁針術式不同，比較時需留意。", "limitations": ["長期追蹤造成部分失聯，最終病例數相對少", "只使用 AR40e 一款 IOL，結果不一定適用其他 IOL", "未記錄術畢 flange 是否完全退入隧道，以及燒灼的 haptic 長度", "缺少中間時間點的追蹤資料"], "authorsView": "作者認為改良 Yamane 術式長期穩定性良好，haptic 周圍鞏膜組織的增厚可能進一步強化固定。flange 外露處的結膜會變薄，因此手術結束時應確認 flange 已完全推入鞏膜隧道，必要時修剪 haptic 長度。白到白距離較小的眼睛，haptic 回彈力較大，flange 較容易被推出隧道。", "figures": [{"kind": "table", "title": "術後併發症（75 眼）", "columns": ["併發症", "早期（< 1 個月）", "晚期（≥ 1 個月）"], "rows": [["暫時性角膜水腫", "11（14.7%）", "—"], ["玻璃體出血", "1（1.3%）", "—"], ["眼壓升高（> 25 mmHg）", "5（6.7%）", "4（5.3%）"], ["IOL 瞳孔夾持", "9（12.0%）", "5（6.7%）"], ["黃斑囊狀水腫（CME）", "1（1.3%）", "1（1.3%）"]], "caption": "追蹤期間無 IOL 脫位、角膜內皮失代償、視網膜剝離或眼內炎。", "source": "整理自原文 Table 3（Xu et al., Am J Ophthalmol 2026）"}], "titleZh": "改良 Yamane 無縫線鞏膜內固定的長期臨床結果", "mustRead": true, "mustRank": 4}, {"id": "p3d200152", "cat": "05", "sub": "01", "year": 2021, "title": "The Dos and Don’ts of Implanting an IOL in the Sulcus", "titleZh": "睫狀溝植入 IOL 該做與不該做的事（CRST 專題）", "url": "https://crstoday.com/crst-issues/may-2021/the-dos-and-donts-of-implanting-an-iol-in-the-sulcus/44474/", "authors": "", "citation": "", "doi": "https://crstoday.com/crst-issues/may-2021/the-dos-and-donts-of-implanting-an-iol-in-the-sulcus/44474/", "journal": "", "keyResults": [], "limitations": [], "mustRead": true, "n": "", "studyType": "", "tags": []}, {"id": "p11882318", "cat": "05", "sub": "01", "year": 2017, "title": "Diagnosis and Management of Posteriorly Dislocated Lenses", "titleZh": "後脫位水晶體與 IOL 的診斷與處置（EyeNet Pearls）"}, {"id": "pc455463e", "cat": "05", "sub": "01", "year": 2024, "title": "Complicated Cataract Cases: AAO 2023 Spotlight on Cataract", "titleZh": "複雜白內障案例精選：AAO 2023 Spotlight on Cataract（EyeNet）", "url": "https://www.aao.org/eyenet/article/complicated-cataract-cases"}, {"id": "p4e00497b", "cat": "05", "sub": "01", "year": 2025, "title": "EyeWorld Asia-Pacific, December 2025 Issue", "titleZh": "EyeWorld Asia-Pacific 2025 年 12 月號：IOL 固定與 Yamane", "url": "https://eyeworldap.apacrs.org/archive/eyeworld-asia-pacific"}, {"id": "p3806059f", "cat": "05", "sub": "01", "year": 2021, "title": "Yamane Tips and Tricks", "titleZh": "Yamane 術式實戰技巧（CRST 專題）", "url": "https://crstoday.com/articles/may-2021/yamane-tips-and-tricks/"}, {"id": "p00a04572", "cat": "05", "sub": "01", "year": 2023, "title": "An Update on the Yamane Technique", "titleZh": "Yamane 術式最新進展與成功關鍵", "url": "https://crstoday.com/articles/apr-2023/an-update-on-the-yamane-technique"}, {"id": "p1829c7bf", "cat": "05", "sub": "02", "year": 2016, "title": "Evaluation of in vitro glistening formation in different hydrophobic acrylic intraocular lenses", "titleZh": "不同疏水性壓克力 IOL 的體外 glistening 評估（ESCRS 海報）", "url": "https://legacy.escrs.org/Copenhagen2016/programme/posters-details.asp?id=25396"}, {"id": "p277e56c4", "cat": "05", "sub": "02", "year": 2020, "title": "Assessment of central and peripheral corneal astigmatism in an elderly population: a retrospective analysis of topography results from 717 eyes", "titleZh": "高齡族群角膜中央與周邊散光評估（ESCRS 海報，717 眼）", "url": "https://legacy.escrs.org/amsterdam2020/programme/free-papers-details.asp?id=37002"}, {"id": "pf5963d95", "cat": "06", "sub": "01", "year": 2020, "title": "A progressive-toric IOL design that accounts for the decrease of corneal astigmatism with pupil size: ray-tracing simulations using corneal topography data", "titleZh": "漸進式 toric IOL 設計的光學模擬（ESCRS 海報）", "url": "https://legacy.escrs.org/amsterdam2020/programme/posters-details.asp?id=36478"}, {"id": "pdbfb737b", "cat": "06", "sub": "01", "year": 2021, "title": "Progressive-toric IOL design reduces residual astigmatism with increasing pupil size: a ray-tracing simulation based on corneal topography data", "authors": "Łabuz G, Varadi D, Khoramnia R, Auffarth GU", "journal": "Biomedical Optics Express", "citation": "Biomed Opt Express. 2021;12(3):1568", "doi": "10.1364/BOE.417894", "studyType": "光學模擬（ray-tracing）", "n": "52 個以真實角膜地形圖建立的眼模型", "tags": ["PAC", "Avansee Preload 1P Toric", "Ray-tracing", "Strehl ratio"], "conclusion": "瞳孔 3 mm 時漸進式 toric 與傳統 toric 表現相當；瞳孔 5 mm 時漸進式 toric 的殘餘散光較低。", "about": "延續「角膜周邊散光較低」的發現，這篇用 52 個以真實角膜地形圖建立的眼模型做光學模擬，比較 Avansee 漸進式 toric 與同設計但柱鏡度固定的傳統 toric，在 3 mm 與 5 mm 瞳孔下的殘餘散光與成像品質。", "keyResults": ["3 mm 瞳孔：殘餘散光無顯著差異（P = 0.06），Strehl ratio 皆為 0.51 ± 0.15（P = 0.88）", "5 mm 瞳孔：漸進式 toric 殘餘散光少 0.10 D（P < 0.001）", "5 mm 瞳孔 Strehl ratio：漸進式 0.30 ± 0.08，傳統 0.29 ± 0.08（P < 0.001）"], "clinical": "漸進式 toric 的理論優勢主要出現在大瞳孔情境，差異幅度約 0.1 D。這個差異能否轉化為臨床上可感受的視覺改善，本研究無法回答。", "limitations": ["純電腦模擬，不是臨床結果", "5 mm 時的差異幅度小（0.10 D），臨床上是否感受得到尚待臨床研究證實", "廠商提供設計檔並部分贊助"], "authorsView": "作者認為，3 mm 瞳孔時兩種設計的光學表現相當；5 mm 時漸進式 toric 對角膜散光的矯正較有效，殘餘散光較低。", "titleZh": "漸進式 toric IOL 設計：大瞳孔下的殘餘散光光學模擬"}, {"id": "pe6cf8798", "cat": "06", "sub": "01", "year": null, "title": "CN109640885B: Toric intraocular lens, intraocular lens insertion instrument, and method for manufacturing toric intraocular lens", "titleZh": "Kowa 專利：toric IOL 散光軸標記、推注器與製造方法"}, {"id": "p3b01e9d2", "cat": "06", "sub": "01", "year": null, "title": "EP3118671A1: Ophthalmic lens and method for designing ophthalmic lens", "titleZh": "Kowa 專利：眼用鏡片與其設計方法"}, {"id": "p0ff7bcc5", "cat": "06", "sub": "01", "year": 2023, "title": "Rotational Stability of a New Progressive Toric Hydrophobic Intraocular Lens With Gradually Decreasing Cylinder Power", "authors": "Savini G, Mularoni A, Destro E, Barboni P, Schiano-Lomoriello D", "journal": "Journal of Refractive Surgery", "citation": "J Refract Surg. 2023;39(6):374–380", "doi": "10.3928/1081597X-20230424-02", "studyType": "回溯性多中心病例系列", "n": "72 眼（3 個月），56 眼（6 個月）", "tags": ["Avansee Preload 1P Toric", "PAC", "旋轉穩定性"], "conclusion": "Avansee 漸進式 toric 的旋轉穩定性高，符合 ISO 與 ANSI 標準。", "about": "這篇評估 Avansee Preload1P Toric（漸進式 PAC 設計的 C-loop 單片式疏水性 IOL）的旋轉穩定性。義大利 3 個中心回溯分析 72 眼，用後照明照片追蹤術後 1 小時到 6 個月的軸位變化。", "keyResults": ["術後第一次檢查至 3 個月（72 眼）：平均絕對旋轉 1.44° ± 2.65°", "3 個月內旋轉 ≤ 5°：93.1%（67/72）；≤ 10°：98.6%（71/72）", "6 個月追蹤（56 眼）：平均絕對旋轉 2.27° ± 1.96°，≤ 5° 為 94.6%，≤ 10° 為 100%"], "clinical": "這是沒有對照組的病例系列，與其他 toric 的比較屬於跨研究的間接比較。可以作為這款鏡片旋轉穩定性的臨床數據，但不足以證明優於特定鏡片。", "limitations": ["回溯性、無對照組", "6 個月追蹤樣本較少（56 眼）", "與其他 toric 的比較是引用文獻數值，不是同一研究內直接比較"], "authorsView": "作者認為這款新 toric IOL 旋轉穩定性高：3 個月內的數值優於文獻中其他 toric IOL 的對應數值，6 個月時則相近，並符合 ISO 與 ANSI 標準。", "titleZh": "漸進式 toric IOL（Avansee）的旋轉穩定性臨床研究"}, {"id": "p5bef9af9", "cat": "06", "sub": "07", "year": 2010, "title": "Summary of Safety and Effectiveness Data (SSED): Aaren Scientific EC-3 PAL Intraocular Lens (PMA P100016)", "titleZh": "Aaren EC-3 PAL 單焦 IOL：FDA 安全性與有效性摘要（SSED）", "url": "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPMA/pma.cfm?id=P100016"}], "schema": 1}</script>
+<script>
+const DATA = JSON.parse(document.getElementById("catalog").textContent);
+const app = document.getElementById("app");
+const heroEl = document.getElementById("hero");
+const q2 = document.getElementById("q2");
+
+const state = { review: {}, unlocking: null, figs: {}, addingFig: null, figEdit: null, assets: null, sub: null, onlyDone: false, onlyReviewed: false, onlyUnreviewed: false, query: "", editing: null, editingIntro: null, overrides: {}, intros: {}, priv: {}, isOwner: false, db: null };
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const catById = id => DATA.categories.find(c => c.id === id);
+const subOf = p => catById(p.cat).subs.find(s => s.id === p.sub);
+const view = p => {
+  const v = state.overrides[p.id] ? { ...p, ...state.overrides[p.id], edited: true } : { ...p };
+  const r = state.review[p.id];
+  // Signed-in viewers read the live review state; everyone else sees the state baked in at the last sync.
+  if (state.reviewLoaded) { v.reviewed = Boolean(r?.reviewed); v.locked = Boolean(r?.locked); }
+  else { v.reviewed = Boolean(p.reviewed); v.locked = Boolean(p.locked); }
+  return v;
+};
+const all = () => DATA.papers.map(view);
+const has = p => Boolean(p.conclusion && p.conclusion.trim());
+const inCat = (cat, sub) => all().filter(p => p.cat === cat && (!sub || p.sub === sub));
+const byYear = (a, b) => (b.year || 0) - (a.year || 0) || a.title.localeCompare(b.title);
+const rank = p => p.mustRead ? (p.mustRank || 99) : 999;
+const byMust = (a, b) => rank(a) - rank(b) || byYear(a, b);
+// Category lists: must-read first, then author-reviewed, then the rest by year.
+const byList = (a, b) => rank(a) - rank(b) || (b.reviewed - a.reviewed) || byYear(a, b);
+const introOf = (c, s) => { const o = state.intros[`${c.id}-${s.id}`]; return o ? { intro: o.intro, terms: o.terms || [], edited: true } : { intro: s.intro || "", terms: s.terms || [] }; };
+const MUST = '<span class="chip must">必讀</span>';
+
+function item(p) {
+  const s = subOf(p);
+  const tags = `<div class="tags">${p.mustRead ? MUST : ""}<span class="chip year">${p.year ?? "—"}</span>${p.studyType ? `<span class="chip">${esc(p.studyType)}</span>` : ""}<span>${esc(s.en)}</span>${has(p) ? (p.reviewed ? '<span class="chip ok">經作者校閱</span>' : "") : '<span class="chip wip">摘要整理中</span>'}${state.priv[p.id] ? `<span class="chip" title="檔案標籤（只有你看得到）">${esc(state.priv[p.id].label)}</span>` : ""}</div>`;
+  return `<a class="item" href="#${p.id}">${tags}<div class="lead">${esc(p.titleZh || p.title)}</div>${has(p) ? `<div class="takeaway"><b>重點</b>${esc(p.conclusion)}</div>` : ""}<div class="en">${esc(p.title)}</div></a>`;
+}
+
+function hero(on) {
+  document.getElementById("miniSearch").hidden = on;
+  if (!on) { heroEl.innerHTML = ""; return; }
+  const list = all();
+  heroEl.innerHTML = `<section class="hero"><div class="wrap">
+    <h1>白內障與人工水晶體 - 文獻學習資料庫</h1>
+    <p>為眼科與產業專業人士整理：依六大主題分類</p>
+    <p class="ai-note">中文摘要由 AI 工具輔助生成，Posen Wang 負責文獻蒐集、統整與分類，為產業人士節省查找與閱讀時間。</p>
+    <div class="hero-search"><input id="q" type="search" placeholder="輸入關鍵字，例如 Yamane、toric 旋轉、glistening" aria-label="搜尋文獻" value="${esc(state.query)}"></div>
+    <div class="hero-stats"><span><b>${list.length}</b>篇文獻</span><span><b>${list.filter(has).length}</b>篇已有中文摘要</span><span><b>${DATA.categories.length}</b>大主題</span></div>
+  </div></section>`;
+  const q = document.getElementById("q");
+  q.addEventListener("input", () => { state.query = q.value; if (q.value.trim()) { location.hash = "#search"; } });
+}
+
+function home() {
+  hero(true);
+  app.innerHTML = `
+    <section style="display:grid;gap:14px">
+      <div class="sec-head"><h2>依主題瀏覽</h2><span>六大知識分類</span></div>
+      <div class="topics">${DATA.categories.map(c => {
+        const list = inCat(c.id), n = list.filter(has).length;
+        return `<a class="topic" href="#c${c.id}">
+          <div class="topic-head"><h3>${esc(c.zh)}<small>${c.id} · ${esc(c.en)}</small></h3><span class="count">${list.length} 篇</span></div>
+          <ul>${c.subs.map(s => { const k = inCat(c.id, s.id).length; return `<li class="${k ? "" : "zero"}"><span>${esc(s.en)}</span><span>${k}</span></li>`; }).join("")}</ul>
+          ${n ? `<span style="font-size:13px;color:var(--accent)">${n} 篇已有中文摘要</span>` : ""}
+        </a>`;
+      }).join("")}</div>
+    </section>`;
+}
+
+
+// ---- Share links: one site, deep links to a topic (#c04), a subtopic (#c04-03) or a paper (#p…) ----
+// The same page builds two sites: the Claude editing site and the public read-only site (build_reader.py sets READER).
+const READER = true;
+const READER_URL = "https://posen-cataract.github.io/cataract-iol-insight/";
+const SITE_URL = READER ? READER_URL : "https://claude.ai/artifact/82a8AZAc6mBKCchJnBfvqQ";
+const setHash = h => { try { history.replaceState(null, "", "#" + h); } catch {} };
+const shareBtn = (label, hash) => `<span class="share"><button class="btn share-btn" type="button" data-share="${esc(hash)}">${label}</button><span class="share-out" role="status"></span></span>`;
+function wireShare() {
+  app.querySelectorAll("[data-share]").forEach(b => b.addEventListener("click", async () => {
+    const url = SITE_URL + "#" + b.dataset.share, out = b.nextElementSibling;
+    let ok = false;
+    try { await navigator.clipboard.writeText(url); ok = true; } catch {}
+    out.innerHTML = ok ? `已複製連結，可直接貼到 LINE 或 Email` : `請長按或選取下方連結複製：<input class="share-url" readonly value="${esc(url)}" aria-label="分享連結">`;
+    out.querySelector("input")?.select();
+  }));
+}
+
+function category(cid) {
+  hero(false);
+  const c = catById(cid);
+  if (!c) return home();
+  let list = inCat(cid, state.sub).sort(byList);
+  if (state.onlyDone) list = list.filter(has);
+  if (state.onlyReviewed) list = list.filter(p => p.reviewed);
+  if (state.onlyUnreviewed) list = list.filter(p => has(p) && !p.reviewed);
+  const sub = c.subs.find(s => s.id === state.sub);
+  const guide = sub ? guideBlock(c, sub) : overview(c);
+  app.innerHTML = `
+    <nav class="crumbs"><a href="#home">首頁</a><span>›</span><span>${esc(c.zh)}</span></nav>
+    <section class="cat-title"><h1>${esc(c.zh)}</h1><p>${esc(c.en)}${sub ? ` · ${esc(sub.en)}${sub.zh ? `（${esc(sub.zh)}）` : ""}` : ""}</p>${shareBtn(sub ? "分享這個子主題" : "分享這個主題", "c" + cid + (sub ? "-" + sub.id : ""))}</section>
+    <div class="tabs" role="group" aria-label="子主題">
+      <button type="button" data-sub="" aria-pressed="${!state.sub}">全部<span>${inCat(cid).length}</span></button>
+      ${c.subs.map(s => `<button type="button" data-sub="${s.id}" aria-pressed="${state.sub === s.id}">${esc(s.en)}<span>${inCat(cid, s.id).length}</span></button>`).join("")}
+    </div>
+    ${guide}
+    <div class="toolbar"><span>共 ${list.length} 篇，依序為必讀、經作者校閱，其餘依年份新到舊</span><span style="display:flex;gap:16px;flex-wrap:wrap"><label><input id="onlyrev" type="checkbox" ${state.onlyReviewed ? "checked" : ""}> 只看經作者校閱（${inCat(cid, state.sub).filter(p => p.reviewed).length}）</label><label><input id="only" type="checkbox" ${state.onlyDone ? "checked" : ""}> 只看已有中文摘要</label>${state.isOwner ? `<label><input id="unrev" type="checkbox" ${state.onlyUnreviewed ? "checked" : ""}> 只看待校閱（${inCat(cid, state.sub).filter(p => has(p) && !p.reviewed).length}）</label>` : ""}</span></div>
+    <div class="list">${list.length ? list.map(item).join("") : '<div class="empty">這個主題目前還沒有文獻。</div>'}</div>`;
+  wireShare();
+  app.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => { state.sub = b.dataset.sub || null; state.editingIntro = null; setHash("c" + cid + (state.sub ? "-" + state.sub : "")); category(cid); }));
+  app.querySelector("#only").addEventListener("change", e => { state.onlyDone = e.target.checked; category(cid); });
+  app.querySelector("#onlyrev").addEventListener("change", e => { state.onlyReviewed = e.target.checked; category(cid); });
+  app.querySelector("#unrev")?.addEventListener("change", e => { state.onlyUnreviewed = e.target.checked; category(cid); });
+  app.querySelectorAll("[data-go-sub]").forEach(b => b.addEventListener("click", () => { state.sub = b.dataset.goSub; setHash("c" + cid + "-" + state.sub); category(cid); window.scrollTo(0, 0); }));
+  if (sub) wireGuide(c, sub);
+}
+
+function overview(c) {
+  const subs = c.subs.filter(s => inCat(c.id, s.id).length && introOf(c, s).intro);
+  if (!subs.length) return "";
+  return `<section class="overview">${subs.map(s => {
+    const it = introOf(c, s), first = it.intro.split("。")[0] + "。";
+    return `<button type="button" class="ov" data-go-sub="${s.id}"><b>${esc(s.en)}</b><span>${esc(first)}</span><small>${inCat(c.id, s.id).length} 篇 · 看導讀與必讀 →</small></button>`;
+  }).join("")}</section>`;
+}
+
+function guideBlock(c, s) {
+  const key = `${c.id}-${s.id}`, it = introOf(c, s);
+  if (state.editingIntro === key) {
+    return `<section class="guide"><h2>編輯主題導讀</h2>
+      <div class="editor">
+        <div class="field"><label for="g-intro">導讀內容</label><textarea id="g-intro" rows="5">${esc(it.intro)}</textarea></div>
+        <div class="field"><label for="g-terms">關鍵名詞 <span class="hint">一行一個，格式「名詞：解釋」</span></label><textarea id="g-terms" rows="4">${esc(it.terms.join("\n"))}</textarea></div>
+        <div class="actions"><button class="btn primary" type="button" id="g-save">儲存</button><button class="btn" type="button" id="g-cancel">取消</button>${it.edited ? '<button class="btn ghost-danger" type="button" id="g-revert">還原成原始版本</button>' : ""}<span class="status" id="g-status" role="status"></span></div>
+      </div></section>`;
+  }
+  if (!it.intro && !state.isOwner) return "";
+  const must = inCat(c.id, s.id).filter(p => p.mustRead).sort(byMust);
+  return `<section class="guide">
+    <div class="guide-head"><h2>主題導讀</h2>${state.isOwner ? '<button class="btn" type="button" id="g-edit">編輯導讀</button>' : ""}</div>
+    ${it.intro ? `<p>${esc(it.intro)}</p>` : '<p class="hint">這個子主題還沒有導讀。</p>'}
+    ${it.terms.length ? `<dl class="terms">${it.terms.map(t => { const [k, ...v] = t.split(/[:：]/); return `<div><dt>${esc(k.trim())}</dt><dd>${esc(v.join("：").trim())}</dd></div>`; }).join("")}</dl>` : ""}
+    ${must.length ? `<div class="must-list"><h3>建議先讀</h3><ol>${must.map(p => `<li><a href="#${p.id}">${esc(p.titleZh || p.title)}</a> <span>${p.year ?? ""}</span></li>`).join("")}</ol></div>` : ""}
+  </section>`;
+}
+
+function wireGuide(c, s) {
+  const key = `${c.id}-${s.id}`;
+  app.querySelector("#g-edit")?.addEventListener("click", () => { state.editingIntro = key; category(c.id); });
+  app.querySelector("#g-cancel")?.addEventListener("click", () => { state.editingIntro = null; category(c.id); });
+  const status = app.querySelector("#g-status");
+  const say = (t, err) => { status.textContent = t; status.classList.toggle("err", !!err); };
+  app.querySelector("#g-save")?.addEventListener("click", async e => {
+    if (!state.db) return say("目前連不到資料庫，無法儲存。請重新整理頁面後再試。", true);
+    const body = { intro: app.querySelector("#g-intro").value.trim(), terms: app.querySelector("#g-terms").value.split("\n").map(x => x.trim()).filter(Boolean), updatedAt: new Date().toISOString() };
+    e.target.disabled = true; say("儲存中…");
+    try { await state.db.collection("intros").doc(key).set(body); state.intros[key] = body; state.editingIntro = null; category(c.id); }
+    catch (err) { e.target.disabled = false; say(err?.code === "invalid_argument" ? "沒有儲存權限，只有網站擁有者可以修改。" : "儲存失敗，請稍後再按一次儲存。", true); }
+  });
+  app.querySelector("#g-revert")?.addEventListener("click", async e => {
+    e.target.disabled = true; say("還原中…");
+    try { await state.db.collection("intros").doc(key).delete(); delete state.intros[key]; state.editingIntro = null; category(c.id); }
+    catch { e.target.disabled = false; say("還原失敗，請稍後再試。", true); }
+  });
+}
+
+function paper(pid) {
+  hero(false);
+  const base = DATA.papers.find(x => x.id === pid);
+  if (!base) return home();
+  const p = view(base), c = catById(p.cat), s = subOf(p);
+  if (state.editing === pid && !p.locked) return editor(p, c, s);
+  const path = state.priv[pid]?.path || "";
+  const facts = [["研究類型", p.studyType], ["樣本數", p.n], ["期刊", p.citation], ["標籤", (p.tags || []).join("、")]].filter(([, v]) => v);
+  const editBtn = state.isOwner && !p.locked ? `<button class="btn" type="button" id="edit">${has(p) ? "編輯這篇摘要" : "撰寫摘要"}</button>` : "";
+  app.innerHTML = `
+    <nav class="crumbs"><a href="#home">首頁</a><span>›</span><a href="#c${c.id}">${esc(c.zh)}</a><span>›</span><span>${esc(s.en)}</span></nav>
+    <article class="sheet">
+      <div class="sheet-head">
+        <div class="tags" style="display:flex;gap:6px;flex-wrap:wrap">${p.mustRead ? MUST : ""}<span class="chip year">${p.year ?? "—"}</span>${p.studyType ? `<span class="chip">${esc(p.studyType)}</span>` : ""}${has(p) ? "" : '<span class="chip wip">摘要整理中</span>'}</div>
+        <h1>${esc(p.titleZh || p.title)}</h1>
+        <div class="orig"><span>原文標題</span>${esc(p.title)}</div>
+        ${p.authors || p.journal ? `<div class="cite">${esc(p.authors)}${p.journal ? `. <i>${esc(p.journal)}</i>` : ""}</div>` : ""}
+        <div class="source">${sourceLink(p)}${shareBtn("分享這篇", p.id)}${editBtn}</div>
+        ${origin(p) ? `<div class="srcnote">${esc(origin(p).note)}</div>` : ""}
+        ${p.edited && p.updatedAt ? `<div class="edited">最後修改：${esc(new Date(p.updatedAt).toLocaleString("zh-TW"))}</div>` : ""}
+        ${state.isOwner && has(p) ? lockBar(p) : ""}
+      </div>
+      <div class="sheet-body">
+      ${has(p) ? `
+        ${jumpBar(p)}
+        <div class="keypoint" id="s-key"><small>一句話重點</small><p>${esc(p.conclusion)}</p></div>
+        ${facts.length ? `<dl class="facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
+        <div class="layers-note">摘要依證據層次分為三層，越往下越屬於延伸推論。${p.reviewed ? '<span class="badge-ai reviewed">AI 輔助生成 · 經作者校閱</span>' : '<span class="badge-ai">AI 輔助生成</span>'}</div>
+        ${layers(p)}
+      ` : `<div class="pending">這篇的中文摘要還在整理中。${state.isOwner ? "可以按上方「撰寫摘要」直接新增。" : ""}</div>`}
+      ${path ? `<section class="block"><h2>本機原文檔案</h2><div class="localpath"><code>${esc(path)}</code><button class="btn" type="button" id="copy">複製路徑</button></div></section>` : ""}
+      </div>
+    </article>`;
+  app.querySelector("#edit")?.addEventListener("click", () => { state.editing = pid; paper(pid); });
+  wireFigs(p);
+  wireLock(p);
+  wireJump();
+  wireShare();
+  const copy = app.querySelector("#copy");
+  copy?.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(path); copy.textContent = "已複製"; } catch { copy.textContent = "請手動選取"; }
+  });
+}
+
+const isUrl = v => /^https?:\/\//i.test(v || "");
+const cleanDoi = v => (v || "").trim().replace(/^https?:\/\/(dx\.)?doi\.org\//i, "").replace(/^doi:\s*/i, "");
+// Where "閱讀原文" goes: an explicit URL wins, then DOI; a URL typed into the DOI box is treated as a URL.
+function origin(p) {
+  const doi = cleanDoi(p.doi);
+  if (isUrl(p.url)) return { href: p.url, note: hostOf(p.url) };
+  if (isUrl(doi)) return { href: doi, note: hostOf(doi) };
+  if (doi) return { href: `https://doi.org/${encodeURI(doi)}`, note: `DOI: ${doi}` };
+  return null;
+}
+const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
+
+const listHtml = a => (a || []).length ? `<ul>${a.map(r => `<li>${esc(r)}</li>`).join("")}</ul>` : "";
+const para = t => t ? `<p>${esc(t)}</p>` : "";
+// Collapsible blocks (phone, tablet and desktop alike). Background blocks start folded; readers open what they need.
+const fold = (id, title, body, startClosed) => `<details class="fold" id="${id}"${startClosed ? "" : " open"}><summary><h4>${title}</h4><span class="chev" aria-hidden="true"></span></summary><div class="fold-body">${body}</div></details>`;
+const openTo = el => { for (let d = el.closest("details"); d; d = d.parentElement?.closest("details")) d.open = true; };
+// Three evidence layers, from what the paper measured to what may follow for practice.
+// Older fields (design/application) are read as fallbacks for summaries saved before this structure.
+function layers(p) {
+  const L = [
+    ["evidence", "1", "文獻實際結果", "Evidence", "研究做了什麼、量到什麼數據。只寫原文中的事實與數字。",
+      `${(p.about || p.design) ? fold("s-design", "研究設計", para(p.about || p.design), true) : ""}${(p.keyResults || []).length ? fold("s-data", "主要數據", listHtml(p.keyResults)) : ""}${figuresBlock(p)}${(p.limitations || []).length ? fold("s-limits", "研究限制", listHtml(p.limitations), true) : ""}`],
+    ["authors", "2", "作者解釋", "Authors' Interpretation", "原文作者自己的結論與建議。",
+      para(p.authorsView)],
+    ["implication", "3", "臨床實務推論", "Clinical Implication", "根據前兩層做的保守推論，不是原文的直接結論。",
+      para(p.clinical || p.application)],
+  ];
+  return L.filter(l => l[5]).map(([cls, n, zh, en, note, body]) => `<details class="layer ${cls}" id="s-${cls}" open>
+    <summary class="layer-head"><span class="ln">${n}</span><div class="lh-text"><h2>${zh}<small>${en}</small></h2><p>${note}</p></div><span class="chev" aria-hidden="true"></span></summary>
+    <div class="layer-body">${body}</div></details>`).join("");
+}
+
+function sourceLink(p) {
+  const patent = /^([A-Z]{2}\d{6,}[A-Z]\d?)/.exec(p.title);
+  const o = origin(p);
+  if (o) return `<a class="btn primary" href="${esc(o.href)}" target="_blank" rel="noopener">閱讀原文</a>`;
+  if (patent) return `<a class="btn primary" href="https://patents.google.com/patent/${patent[1]}" target="_blank" rel="noopener">在 Google Patents 查看專利</a>`;
+  if (/SSED/.test(p.title)) return `<a class="btn" href="https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpma/pma.cfm" target="_blank" rel="noopener">FDA PMA 資料庫</a>`;
+  return `<a class="btn" href="https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(p.title)}" target="_blank" rel="noopener">在 PubMed 搜尋原文</a>`;
+}
+
+
+// ---- Figures: charts redrawn from reported numbers, tables, or uploaded images ----
+const FIG_COLORS = ["var(--accent)", "var(--gold)", "var(--muted)"];
+const fmtN = v => (Math.round(v * 100) / 100).toString();
+const FIG_KIND = { bar: "依原文數據重繪", line: "依原文數據重繪", table: "原文表格整理", image: "原文圖片" };
+function barFig(fg) {
+  const series = fg.series || [];
+  const vals = series.flatMap(s => s.values).filter(v => typeof v === "number");
+  const max = fg.max || Math.max(...vals, 0) || 1;
+  const unit = fg.unit || "";
+  const rows = (fg.labels || []).map((l, i) => `<div class="fb-row"><div class="fb-label">${esc(l)}</div><div class="fb-bars">${series.map((s, k) => {
+    const v = s.values[i];
+    return typeof v === "number" ? `<div class="fb-track"><div class="fb-fill" style="width:calc(${(v / max) * 100}% - 60px * ${v / max});background:${FIG_COLORS[k % 3]}"></div><span class="fb-val">${fg.decimals != null ? v.toFixed(fg.decimals) : fmtN(v)}${esc(unit)}</span></div>` : `<div class="fb-track"><span class="fb-na">未報告</span></div>`;
+  }).join("")}</div></div>`).join("");
+  return `<div class="fb" role="img" aria-label="${esc(fg.title || "")}">${rows}</div>${legend(series)}`;
+}
+const legend = series => series.length > 1 ? `<div class="fig-legend">${series.map((s, k) => `<span><i style="background:${FIG_COLORS[k % 3]}"></i>${esc(s.name)}</span>`).join("")}</div>` : "";
+function lineFig(fg) {
+  const W = 640, H = 240, L = 44, R = 16, T = 22, B = 34;
+  const labels = fg.labels || [], series = fg.series || [];
+  const vals = series.flatMap(s => s.values).filter(v => typeof v === "number");
+  const dmin = Math.min(...vals), dmax = Math.max(...vals);
+  const raw = (dmax - dmin) / 4 || 1, mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= raw);
+  const lo = fg.min ?? Math.max(0, Math.floor(dmin / step) * step - (dmin % step === 0 ? step : 0)), hi = fg.max ?? Math.ceil(dmax / step) * step + (dmax % step === 0 ? step : 0);
+  const PADX = 26;
+  const x = i => L + PADX + (labels.length < 2 ? 0 : (i * (W - L - R - 2 * PADX)) / (labels.length - 1));
+  const y = v => T + ((hi - v) / (hi - lo)) * (H - T - B);
+  const ticks = []; for (let v = lo; v <= hi + step / 2; v += step) ticks.push(+v.toFixed(6));
+  const grid = ticks.map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${fmtN(v)}</text>`).join("");
+  const dv = v => fg.decimals != null ? v.toFixed(fg.decimals) : fmtN(v);
+  const xl = labels.map((l, i) => `<text x="${x(i)}" y="${H - 10}" text-anchor="middle">${esc(l)}</text>`).join("");
+  const lines = series.map((s, k) => {
+    const pts = s.values.map((v, i) => typeof v === "number" ? [x(i), y(v), v] : null).filter(Boolean);
+    return `<polyline fill="none" stroke="${FIG_COLORS[k % 3]}" stroke-width="2.5" points="${pts.map(p => p[0] + "," + p[1]).join(" ")}"/>` +
+      pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="var(--surface)" stroke="${FIG_COLORS[k % 3]}" stroke-width="2"/><text class="v" x="${p[0]}" y="${p[1] - 9}" text-anchor="middle">${dv(p[2])}</text>`).join("");
+  }).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(fg.title || "")}">${grid}${xl}${lines}</svg>${legend(series)}${fg.lowerBetter ? '<p class="fig-note">縱軸數值越低代表結果越好。</p>' : ""}`;
+}
+function tableFig(fg) {
+  return `<div class="fig-table"><table><thead><tr>${(fg.columns || []).map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${(fg.rows || []).map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+const imgSrc = fg => fg.assetId ? (READER ? "img/" + fg.assetId + ".png" : "/_blob/" + fg.assetId) : fg.src || "";
+function figHtml(fg, idx, own, move) {
+  const body = fg.kind === "bar" ? barFig(fg) : fg.kind === "line" ? lineFig(fg) : fg.kind === "table" ? tableFig(fg)
+    : fg.kind === "image" && fg.imgMissing ? `<p class="fig-ref">此為原文圖片，請見原文${state.figOrigin ? `（<a href="${esc(state.figOrigin)}" target="_blank" rel="noopener">查看原文</a>）` : ""}。</p>`
+    : fg.kind === "image" && imgSrc(fg) ? `<button class="fig-zoom" type="button" data-zoom="${esc(imgSrc(fg))}" aria-label="放大圖片"><img src="${esc(imgSrc(fg))}" alt="${esc(fg.alt || fg.title || "")}" loading="lazy"></button><p class="fig-note">點圖片可放大</p>` : "";
+  if (!body) return "";
+  return `<figure class="fig" style="margin:0">
+    <div class="fig-head"><h5>${esc(fg.title || "")}</h5><span class="fig-kind">${FIG_KIND[fg.kind] || ""}</span></div>
+    ${body}
+    ${fg.caption ? `<p class="fig-cap">${esc(fg.caption)}</p>` : ""}
+    ${fg.source ? `<p class="fig-src${fg.kind === "image" ? " img-src" : ""}">資料來源：${esc(fg.source)}${fg.kind === "image" && state.figOrigin ? ` · <a href="${esc(state.figOrigin)}" target="_blank" rel="noopener">查看原文</a>` : ""}</p>` : ""}
+    ${move || own ? `<div class="fig-tools">${move?.up ? `<button class="btn" type="button" data-figmove="${move.pos}" data-dir="-1" aria-label="往上移">↑ 上移</button>` : ""}${move?.down ? `<button class="btn" type="button" data-figmove="${move.pos}" data-dir="1" aria-label="往下移">↓ 下移</button>` : ""}${own ? `<button class="btn" type="button" data-figedit="${idx}">編輯</button><button class="btn ghost-danger" type="button" data-figdel="${idx}">刪除</button>` : ""}</div>` : ""}
+  </figure>`;
+}
+const onlineFigs = pid => state.figsLoaded ? state.figs[pid]?.items || [] : DATA.papers.find(x => x.id === pid)?.liveFigures || [];
+const figOrder = pid => (state.figsLoaded ? state.figs[pid]?.order : DATA.papers.find(x => x.id === pid)?.liveOrder) || [];
+const figKey = (it, i) => it.fid || it.addedAt || "o" + i;
+// One ordered list across built-in figures (b0, b1…) and uploaded ones; a saved order wins, unknown keys keep natural order.
+function figEntries(p) {
+  const list = [...(p.figures || []).map((fig, i) => ({ key: "b" + i, fig, online: false, idx: i })), ...onlineFigs(p.id).map((fig, i) => ({ key: figKey(fig, i), fig, online: true, idx: i }))];
+  const order = figOrder(p.id), at = k => { const i = order.indexOf(k); return i < 0 ? 1e6 : i; };
+  return list.map((e, n) => ({ ...e, n })).sort((a, b) => at(a.key) - at(b.key) || a.n - b.n);
+}
+async function saveFigs(pid, items, order) {
+  const body = { items, order: order || figOrder(pid) };
+  await state.db.collection("figures").doc(pid).set(body);
+  state.figs[pid] = body; state.figsLoaded = true;
+}
+function figuresBlock(p) {
+  state.figOrigin = origin(p)?.href || "";
+  const base = p.figures || [], extra = onlineFigs(p.id);
+  if (!base.length && !extra.length && !(state.isOwner && !p.locked)) return "";
+  const canEdit = state.isOwner && !p.locked;
+  const add = canEdit ? (state.addingFig === p.id ? figForm(p) : `<button class="btn fig-add" type="button" id="figadd">＋ 新增圖表</button>`) : "";
+  const entries = figEntries(p);
+  const cards = entries.map((e, pos) => e.online && state.addingFig === p.id && state.figEdit === e.idx ? figForm(p, e.fig)
+    : figHtml(e.fig, e.idx, canEdit && e.online, canEdit && entries.length > 1 ? { pos, up: pos > 0, down: pos < entries.length - 1 } : null)).filter(Boolean);
+  if (state.figEdit == null && add) cards.push(add);
+  const n = base.length + extra.length;
+  return `<details class="fold figs-wrap" id="s-figs" open><summary><h4>重點圖表${n ? `（${n}）` : ""}</h4><span class="chev" aria-hidden="true"></span></summary><div class="fold-body"><div class="figs">${cards.join("")}</div></div></details>`;
+}
+function figCite(p) {
+  const first = (p.authors || "").split(",")[0].trim();
+  const who = first ? `${first} et al., ` : "";
+  const where = p.citation || [p.journal, p.year].filter(Boolean).join(" ");
+  return `原文 Figure ＿（${who}${where}）`;
+}
+function figForm(p, fg) {
+  const ed = !!fg, tsv = fg?.kind === "table" ? [fg.columns, ...(fg.rows || [])].map(r => (r || []).join("\t")).join("\n") : "";
+  return `<form class="fig-form" id="figform">
+    ${ed ? `<span class="chip" style="justify-self:start">編輯圖表</span>` : ""}
+    <div class="row2"><div class="field"><label for="fg-kind">類型</label><select id="fg-kind" ${ed ? "disabled" : ""}><option value="image" ${fg?.kind === "image" ? "selected" : ""}>上傳圖片</option><option value="table" ${fg?.kind === "table" ? "selected" : ""}>貼上表格</option></select></div>
+    <div class="field"><label for="fg-title">圖表標題</label><input id="fg-title" required value="${esc(fg?.title || "")}"></div></div>
+    <div class="field" id="fg-filebox"><label for="fg-file">${ed ? "更換圖片 <span class=\"hint\">不選檔案就保留原本的圖片</span>" : "圖片檔 <span class=\"hint\">PNG / JPG，建議寬 1200 px 以內</span>"}</label>${ed && fg.kind === "image" ? `<img src="${esc(imgSrc(fg))}" alt="" style="max-height:120px;justify-self:start">` : ""}<input id="fg-file" type="file" accept="image/*"></div>
+    <div class="field" id="fg-tablebox" hidden><label for="fg-table">表格內容 <span class="hint">可直接從 Excel 複製貼上；第一列為欄位名稱</span></label><textarea id="fg-table" rows="6">${esc(tsv)}</textarea></div>
+    <div class="field"><label for="fg-cap">說明</label><textarea id="fg-cap" rows="3">${esc(fg?.caption || "")}</textarea></div>
+    <div class="field"><label for="fg-src">資料來源 <span class="hint">${ed ? "圖號、作者、期刊與年份" : "已自動帶入這篇的出處，請把 ＿ 改成圖號"}</span></label><input id="fg-src" value="${esc(ed ? fg.source || "" : figCite(p))}"></div>
+    <p class="fig-note">原文圖片請完整註明出處（圖號、作者、期刊與年份）；文章頁會在圖下方附上原文連結。</p>
+    <div class="actions"><button class="btn primary" type="submit" id="fg-save">${ed ? "儲存修改" : "加入"}</button><button class="btn" type="button" id="fg-cancel">取消</button><span class="status" id="fg-status" role="status"></span></div>
+  </form>`;
+}
+function wireFigs(p) {
+  app.querySelectorAll("[data-zoom]").forEach(b => b.addEventListener("click", () => {
+    const ov = document.createElement("div"); ov.className = "zoom-ov"; ov.setAttribute("role", "dialog"); ov.tabIndex = -1;
+    ov.innerHTML = `<img src="${esc(b.dataset.zoom)}" alt=""><span>點任意處或按 Esc 關閉</span>`;
+    const close = () => { ov.remove(); document.removeEventListener("keydown", key); b.focus(); };
+    const key = e => { if (e.key === "Escape") close(); };
+    ov.addEventListener("click", close); document.addEventListener("keydown", key);
+    document.body.appendChild(ov); ov.focus();
+  }));
+  app.querySelector("#figadd")?.addEventListener("click", () => { state.addingFig = p.id; state.figEdit = null; paper(p.id); });
+  app.querySelectorAll("[data-figedit]").forEach(b => b.addEventListener("click", () => { state.addingFig = p.id; state.figEdit = +b.dataset.figedit; paper(p.id); }));
+  app.querySelectorAll("[data-figmove]").forEach(b => b.addEventListener("click", async () => {
+    const keys = figEntries(p).map(e => e.key), i = +b.dataset.figmove, j = i + +b.dataset.dir;
+    [keys[i], keys[j]] = [keys[j], keys[i]];
+    b.disabled = true;
+    try { await saveFigs(p.id, [...onlineFigs(p.id)], keys); paper(p.id); }
+    catch { b.disabled = false; b.textContent = "移動失敗"; }
+  }));
+  app.querySelectorAll("[data-figdel]").forEach(b => b.addEventListener("click", async () => {
+    if (!confirmDel(b)) return;
+    const gone = figKey(onlineFigs(p.id)[+b.dataset.figdel], +b.dataset.figdel);
+    const keys = figEntries(p).map(e => e.key).filter(k => k !== gone);
+    const items = onlineFigs(p.id).filter((_, i) => i !== +b.dataset.figdel);
+    try { await saveFigs(p.id, items, keys); paper(p.id); }
+    catch { b.textContent = "刪除失敗，請再試一次"; }
+  }));
+  const form = app.querySelector("#figform"); if (!form) return;
+  const kind = form.querySelector("#fg-kind"), st = form.querySelector("#fg-status");
+  const say = (m, err) => { st.textContent = m; st.classList.toggle("err", !!err); };
+  const editIdx = state.figEdit, old = editIdx != null ? onlineFigs(p.id)[editIdx] : null;
+  if (!state.assets && !old) { kind.value = "table"; kind.querySelector('option[value="image"]').disabled = true; }
+  const sync = () => { form.querySelector("#fg-filebox").hidden = kind.value !== "image"; form.querySelector("#fg-tablebox").hidden = kind.value !== "table"; };
+  kind.addEventListener("change", sync); sync();
+  form.querySelector("#fg-cancel").addEventListener("click", () => { state.addingFig = null; state.figEdit = null; paper(p.id); });
+  form.scrollIntoView({ block: "nearest" });
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    if (!state.db) return say("目前連不到資料庫，請重新整理後再試。", true);
+    const v = id => form.querySelector(id).value.trim();
+    const item = { ...(old || {}), kind: old ? old.kind : kind.value, title: v("#fg-title"), caption: v("#fg-cap"), source: v("#fg-src"), ...(old ? { editedAt: new Date().toISOString() } : { addedAt: new Date().toISOString(), fid: "f" + Date.now().toString(36) }) };
+    const btn = form.querySelector("#fg-save"); btn.disabled = true;
+    try {
+      if (item.kind === "image") {
+        const file = form.querySelector("#fg-file").files[0];
+        if (file) {
+          if (!state.assets) { btn.disabled = false; return say("目前無法上傳圖片，請重新整理後再試。", true); }
+          say("上傳中…");
+          const up = await state.assets.upload(file);
+          item.assetId = up.id; delete item.src;
+        } else if (!old) { btn.disabled = false; return say("請先選擇圖片檔。", true); }
+        item.alt = item.title;
+      } else {
+        const lines = v("#fg-table").split(/\r?\n/).filter(l => l.trim());
+        const cells = l => (l.includes("\t") ? l.split("\t") : l.split(/\s*[|｜]\s*/)).map(c => c.trim());
+        if (lines.length < 2) { btn.disabled = false; return say("表格至少需要一列欄位名稱與一列資料。", true); }
+        item.columns = cells(lines[0]); item.rows = lines.slice(1).map(cells);
+      }
+      const items = [...onlineFigs(p.id)];
+      if (old) items[editIdx] = item; else items.push(item);
+      const keys = figEntries(p).map(e => e.key); if (!old) keys.push(item.fid);
+      await saveFigs(p.id, items, keys);
+      state.addingFig = null; state.figEdit = null; paper(p.id);
+    } catch (err) { btn.disabled = false; say(err?.code === "quota_exceeded" ? "空間已滿，無法再新增。" : "儲存失敗，請稍後再試。", true); }
+  });
+}
+const confirmDel = b => { if (b.dataset.armed) return true; b.dataset.armed = "1"; b.textContent = "再按一次確認刪除"; return false; };
+
+
+// ---- Review lock: owner marks a paper as proofread; locked papers hide every edit control ----
+const UNLOCK_CODE = "0000"; // guards against accidental edits only; writing is already owner-only
+function lockBar(p) {
+  if (p.locked) return `<div class="lockbar locked"><span>🔒 已校稿完成並鎖定${(state.review[p.id]?.at || p.reviewedAt) ? ` · ${esc(new Date(state.review[p.id]?.at || p.reviewedAt).toLocaleDateString("zh-TW"))}` : ""}</span>
+    ${state.unlocking === p.id ? `<form id="unlockf" class="unlockf"><label for="unlock-code">輸入解鎖密碼</label><input id="unlock-code" inputmode="numeric" autocomplete="off" maxlength="12"><button class="btn primary" type="submit">解除鎖定</button><button class="btn" type="button" id="unlock-cancel">取消</button><span class="status" id="lock-status" role="status"></span></form>`
+      : `<button class="btn" type="button" id="unlock">解除鎖定</button>`}</div>`;
+  return `<div class="lockbar"><label class="check"><input type="checkbox" id="lockchk"> 校稿完成（摘要與圖表都已對照原文確認），鎖定這篇</label><span class="status" id="lock-status" role="status"></span></div>`;
+}
+function wireLock(p) {
+  const st = () => app.querySelector("#lock-status");
+  const save = async body => {
+    if (!state.db) { st().textContent = "目前連不到資料庫，請重新整理後再試。"; st().classList.add("err"); return false; }
+    try { await state.db.collection("review").doc(p.id).set(body); state.review[p.id] = body; state.reviewLoaded = true; return true; }
+    catch { st().textContent = "儲存失敗，請稍後再試。"; st().classList.add("err"); return false; }
+  };
+  app.querySelector("#lockchk")?.addEventListener("change", async e => {
+    e.target.disabled = true;
+    if (await save({ reviewed: true, locked: true, at: new Date().toISOString() })) { state.addingFig = null; paper(p.id); }
+    else { e.target.checked = false; e.target.disabled = false; }
+  });
+  app.querySelector("#unlock")?.addEventListener("click", () => { state.unlocking = p.id; paper(p.id); app.querySelector("#unlock-code")?.focus(); });
+  app.querySelector("#unlock-cancel")?.addEventListener("click", () => { state.unlocking = null; paper(p.id); });
+  app.querySelector("#unlockf")?.addEventListener("submit", async e => {
+    e.preventDefault();
+    const code = app.querySelector("#unlock-code");
+    if (code.value.trim() !== UNLOCK_CODE) { st().textContent = "密碼不正確"; st().classList.add("err"); code.select(); return; }
+    if (await save({ reviewed: false, locked: false, unlockedAt: new Date().toISOString() })) { state.unlocking = null; paper(p.id); }
+  });
+}
+
+
+
+// ---- In-page jump bar: buttons (not links) so the hash router is never triggered ----
+function jumpBar(p) {
+  const hasFigs = (p.figures || []).length || onlineFigs(p.id).length;
+  const items = [["s-key", "重點"], ["s-data", "數據", (p.keyResults || []).length], ["s-figs", "圖表", hasFigs], ["s-authors", "作者解釋", p.authorsView], ["s-implication", "臨床推論", p.clinical || p.application]]
+    .filter(i => i.length < 3 || i[2]);
+  return `<nav class="jump" aria-label="跳到段落">${items.map(([id, label]) => `<button type="button" data-jump="${id}">${label}</button>`).join("")}<button type="button" class="jump-all" id="foldall" aria-label="全部展開或收合">全部展開</button></nav>`;
+}
+function wireJump() {
+  const all = app.querySelector("#foldall");
+  const blocks = () => [...app.querySelectorAll("details.fold, details.layer")];
+  const sync = () => { if (all) all.textContent = blocks().every(d => d.open) ? "全部收合" : "全部展開"; };
+  blocks().forEach(d => d.addEventListener("toggle", sync)); sync();
+  all?.addEventListener("click", () => { const open = !blocks().every(d => d.open); blocks().forEach(d => { d.open = open; }); sync(); });
+  app.querySelectorAll("[data-jump]").forEach(b => b.addEventListener("click", () => {
+    const el = document.getElementById(b.dataset.jump); if (!el) return;
+    openTo(el);
+    const bar = app.querySelector(".jump");
+    const y = el.getBoundingClientRect().top + window.scrollY - (bar ? bar.offsetHeight + 12 : 12);
+    window.scrollTo({ top: y, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }));
+}
+
+function editor(p, c, s) {
+  const lines = a => (a || []).join("\n");
+  const f = (id, label, val, opts = {}) => `<div class="field${opts.big ? " big" : ""}"><label for="f-${id}">${label}${opts.hint ? ` <span class="hint">${opts.hint}</span>` : ""}</label>${opts.input ? `<input id="f-${id}" value="${esc(val)}">` : `<textarea id="f-${id}" rows="${opts.rows || 3}">${esc(val)}</textarea>`}</div>`;
+  app.innerHTML = `
+    <nav class="crumbs"><a href="#home">首頁</a><span>›</span><a href="#c${c.id}">${esc(c.zh)}</a><span>›</span><span>${esc(s.en)}</span></nav>
+    <article class="sheet">
+      <div class="sheet-head"><span class="chip" style="justify-self:start">編輯摘要</span><h1>${esc(p.titleZh || p.title)}</h1><div class="orig"><span>原文標題</span>${esc(p.title)}</div></div>
+      <form class="sheet-body editor" id="form">
+        ${f("titleZh", "中文標題", p.titleZh, { input: true, hint: "列表與文章頁顯示的標題" })}
+        <div style="display:flex;gap:20px;flex-wrap:wrap"><label class="check"><input type="checkbox" id="f-must" ${p.mustRead ? "checked" : ""}> 設為這個子主題的必讀文章</label></div>
+        ${f("conclusion", "一句話重點", p.conclusion, { big: true, rows: 2 })}
+        <div class="row2">${f("studyType", "研究類型", p.studyType, { input: true })}${f("n", "樣本數", p.n, { input: true })}</div>
+        <div class="row2">${f("authors", "作者", p.authors, { input: true })}${f("journal", "期刊", p.journal, { input: true })}</div>
+        <div class="row2">${f("citation", "引用格式", p.citation, { input: true })}${f("doi", "DOI", cleanDoi(p.doi), { input: true, hint: "只填號碼，例如 10.1097/…" })}</div>
+        ${f("url", "原文網址", p.url || (isUrl(cleanDoi(p.doi)) ? cleanDoi(p.doi) : ""), { input: true, hint: "沒有 DOI 時填，例如學會網頁、CRST、EyeNet 文章；有填時優先使用" })}
+        ${f("tags", "標籤", (p.tags || []).join("、"), { input: true, hint: "用頓號或逗號分隔" })}
+        <h3 class="ed-layer">1 · 文獻實際結果（Evidence）<span>只寫原文的事實與數字</span></h3>
+        ${f("about", "研究設計", p.about || p.design, { rows: 4 })}
+        ${f("keyResults", "主要數據", lines(p.keyResults), { rows: 6, hint: "一行一點，保留原始數字" })}
+        ${f("limitations", "研究限制", lines(p.limitations), { rows: 4, hint: "一行一點" })}
+        <h3 class="ed-layer">2 · 作者解釋（Authors' Interpretation）<span>原文作者的結論與建議</span></h3>
+        ${f("authorsView", "作者解釋", p.authorsView, { rows: 4 })}
+        <h3 class="ed-layer">3 · 臨床實務推論（Clinical Implication）<span>保守推論，避免超出原文</span></h3>
+        ${f("clinical", "臨床實務推論", p.clinical || p.application, { rows: 4 })}
+        <div class="actions">
+          <button class="btn primary" type="submit" id="save">儲存</button>
+          <button class="btn" type="button" id="cancel">取消</button>
+          ${state.overrides[p.id] ? '<button class="btn ghost-danger" type="button" id="revert">還原成原始版本</button>' : ""}
+          <span class="status" id="status" role="status"></span>
+        </div>
+      </form>
+    </article>`;
+  const status = app.querySelector("#status");
+  const say = (t, err) => { status.textContent = t; status.classList.toggle("err", !!err); };
+  const split = v => v.split("\n").map(x => x.trim()).filter(Boolean);
+  const val = id => app.querySelector(`#f-${id}`).value.trim();
+  const done = () => { state.editing = null; paper(p.id); };
+  app.querySelector("#cancel").addEventListener("click", done);
+  app.querySelector("#form").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (!state.db) return say("目前連不到資料庫，無法儲存。請重新整理頁面後再試。", true);
+    const body = {
+      titleZh: val("titleZh") || p.titleZh,
+      mustRead: app.querySelector("#f-must").checked,
+      authors: val("authors"), journal: val("journal"), citation: val("citation"), doi: isUrl(cleanDoi(val("doi"))) ? "" : cleanDoi(val("doi")), url: val("url") || (isUrl(cleanDoi(val("doi"))) ? cleanDoi(val("doi")) : ""),
+      studyType: val("studyType"), n: val("n"), tags: val("tags").split(/[、,，]/).map(t => t.trim()).filter(Boolean),
+      conclusion: val("conclusion"), about: val("about"), keyResults: split(val("keyResults")),
+      limitations: split(val("limitations")), authorsView: val("authorsView"), clinical: val("clinical"),
+      updatedAt: new Date().toISOString(),
+    };
+    const btn = app.querySelector("#save"); btn.disabled = true; say("儲存中…");
+    try {
+      await state.db.collection("summaries").doc(p.id).set(body);
+      state.overrides[p.id] = body; done();
+    } catch (err) {
+      btn.disabled = false;
+      say(err?.code === "invalid_argument" ? "沒有儲存權限，只有網站擁有者可以修改。" : err?.code === "quota_exceeded" ? "資料庫空間已滿，無法再新增。" : "儲存失敗，請稍後再按一次儲存。", true);
+    }
+  });
+  app.querySelector("#revert")?.addEventListener("click", async () => {
+    const btn = app.querySelector("#revert"); btn.disabled = true; say("還原中…");
+    try { await state.db.collection("summaries").doc(p.id).delete(); delete state.overrides[p.id]; done(); }
+    catch { btn.disabled = false; say("還原失敗，請稍後再試。", true); }
+  });
+}
+
+function search(term) {
+  hero(false);
+  q2.value = term;
+  if (document.activeElement !== q2) { q2.focus(); q2.setSelectionRange(term.length, term.length); }
+  const t = term.toLowerCase();
+  const hay = p => [p.titleZh, p.title, state.priv[p.id]?.label, p.authors, p.journal, (p.tags || []).join(" "), p.conclusion, p.about || p.design, (p.keyResults || []).join(" "), p.clinical || p.application, p.authorsView].join(" ").toLowerCase();
+  const list = all().filter(p => hay(p).includes(t)).sort(byYear);
+  app.innerHTML = `
+    <nav class="crumbs"><a href="#home">首頁</a><span>›</span><span>搜尋</span></nav>
+    <div class="sec-head"><h2>「${esc(term)}」找到 ${list.length} 篇</h2></div>
+    <div class="list">${list.length ? list.map(item).join("") : '<div class="empty">沒有找到符合的文獻。可以換個關鍵字，或用英文試試，例如 Yamane、toric、PCO。</div>'}</div>`;
+}
+
+let lastCat = null;
+function route() {
+  const h = location.hash.slice(1) || "home";
+  if (h !== state.editing) state.editing = null;
+  if (h !== state.addingFig) { state.addingFig = null; state.figEdit = null; }
+  if (h !== state.unlocking) state.unlocking = null;
+  state.editingIntro = null;
+  if (h === "search") return state.query.trim() ? search(state.query.trim()) : home();
+  if (h.startsWith("c")) {
+    const [cid, sid] = h.slice(1).split("-");
+    state.sub = sid || null; // the hash always mirrors the open subtopic (tabs update it via replaceState)
+    lastCat = cid; return category(cid);
+  }
+  if (h.startsWith("p")) return paper(h);
+  return home();
+}
+window.addEventListener("hashchange", () => { window.scrollTo(0, 0); route(); });
+q2.addEventListener("input", () => { state.query = q2.value; if (q2.value.trim()) { if (location.hash !== "#search") location.hash = "#search"; else search(q2.value.trim()); } });
+document.addEventListener("input", e => { if (e.target.id === "q" && location.hash === "#search") search(state.query.trim()); });
+route();
+
+// Live features: owner editing + shared summaries. The page works without them.
+(async () => {
+  if (READER || !window.claude?.use) return;
+  const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+  state.isOwner = user ? Boolean(await user.isOwner()) : false;
+  if (state.isOwner) document.getElementById("mode").innerHTML = '<span class="mode">編輯模式</span>';
+  if (!db) { if (state.isOwner) route(); return; }
+  state.db = db;
+  db.collection("summaries").onSnapshot(snap => {
+    const next = {};
+    snap.docs.forEach(d => { if (d.exists) next[d.id] = d.data(); });
+    state.overrides = next;
+    if (!state.editing && !state.editingIntro && !state.addingFig) route();
+  }, () => {});
+  if (state.isOwner) db.collection("private").onSnapshot(snap => {
+    const next = {};
+    snap.docs.forEach(d => { if (d.exists) next[d.id] = d.data(); });
+    state.priv = next;
+    if (!state.editing && !state.editingIntro && !state.addingFig) route();
+  }, () => {});
+  db.collection("review").onSnapshot(snap => {
+    const next = {};
+    snap.docs.forEach(d => { if (d.exists) next[d.id] = d.data(); });
+    state.review = next; state.reviewLoaded = true;
+    if (!state.editing && !state.editingIntro && !state.addingFig && !state.unlocking) route();
+  }, () => {});
+  db.collection("figures").onSnapshot(snap => {
+    const next = {};
+    snap.docs.forEach(d => { if (d.exists) next[d.id] = d.data(); });
+    state.figs = next; state.figsLoaded = true;
+    if (!state.editing && !state.editingIntro && !state.addingFig) route();
+  }, () => {});
+  if (state.isOwner) claude.use("assets").then(a => { state.assets = a; if (state.addingFig) route(); }).catch(() => {});
+  db.collection("intros").onSnapshot(snap => {
+    const next = {};
+    snap.docs.forEach(d => { if (d.exists) next[d.id] = d.data(); });
+    state.intros = next;
+    if (!state.editing && !state.editingIntro && !state.addingFig) route();
+  }, () => {});
+  if (state.isOwner) route();
+})();
+</script>
+</body>
+</html>
