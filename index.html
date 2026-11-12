@@ -117,6 +117,11 @@ main.wrap { padding-top: 28px; padding-bottom: 56px; display: grid; gap: 32px; }
 .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
 .pcard { display: flex; flex-direction: column; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding-bottom: 14px; overflow: hidden; text-decoration: none; color: var(--ink); transition: border-color .15s, box-shadow .15s, transform .15s; min-height: 170px; }
 .pcard:hover { border-color: var(--accent); box-shadow: 0 6px 18px rgba(15,40,70,.08); transform: translateY(-2px); }
+.locked-txt { color: #7b8794; }
+.pcard.locked, .item.locked { background: #eef1f4; border-style: dashed; color: #7b8794; cursor: default; box-shadow: none; transform: none; }
+.pcard.locked .band { background: #b9c2cc; opacity: 1; }
+.pcard.locked .pc-title, .item.locked .lead { color: #6b7785; }
+.pcard.locked:hover, .item.locked:hover { border-color: var(--line); box-shadow: none; transform: none; }
 .pcard .band { height: 5px; background: var(--accent); opacity: .75; }
 .pcard.must .band { background: #c9a35a; opacity: 1; }
 .pcard .pc-top { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 8px 16px 0; font-size: 12px; color: var(--muted); }
@@ -406,12 +411,19 @@ const MUST = '<span class="chip must">必讀</span>';
 
 function item(p) {
   const s = subOf(p);
+  if (isLocked(p)) return `<div class="item locked" aria-disabled="true"><div class="tags">${p.mustRead ? MUST : ""}<span class="chip year">${p.year ?? "—"}</span><span>${esc(s.en)}</span><span class="chip wip">校稿中・即將上線</span></div><div class="lead">${esc(p.titleZh || p.title)}</div></div>`;
   const tags = `<div class="tags">${p.mustRead ? MUST : ""}<span class="chip year">${p.year ?? "—"}</span>${p.studyType ? `<span class="chip">${esc(p.studyType)}</span>` : ""}<span>${esc(s.en)}</span>${has(p) ? (p.reviewed ? '<span class="chip ok">經作者校閱</span>' : "") : '<span class="chip wip">摘要整理中</span>'}${state.priv[p.id] ? `<span class="chip" title="檔案標籤（只有你看得到）">${esc(state.priv[p.id].label)}</span>` : ""}</div>`;
   return `<a class="item" href="#${p.id}">${tags}<div class="lead">${esc(p.titleZh || p.title)}</div>${has(p) ? `<div class="takeaway"><b>重點</b>${esc(p.conclusion)}</div>` : ""}<div class="en">${esc(p.title)}</div></a>`;
 }
 
 const shortJournal = p => (p.citation || p.journal || "").split(/[.;]/)[0];
+const isLocked = p => READER && !p.reviewed; // reader site: only author-reviewed papers open
+function lockedCard(p, n) {
+  return `<div class="pcard locked" aria-disabled="true" title="作者校稿中，完成後開放閱讀"><div class="band"></div><div class="pc-top">${p.mustRead ? `<span class="pc-num">必讀${n ? " " + n : ""}</span>` : ""}<span class="chip year">${p.year ?? "—"}</span><span class="chip wip">校稿中</span></div>
+    <div class="pc-title">${esc(p.titleZh || p.title)}</div><div class="pc-wip">作者校稿完成後開放閱讀</div><div class="pc-foot"><span>即將上線</span><span></span></div></div>`;
+}
 function pcard(p, n) {
+  if (isLocked(p)) return lockedCard(p, n);
   const s = subOf(p);
   const top = `${p.mustRead ? `<span class="pc-num">必讀${n ? " " + n : ""}</span>` : ""}<span class="chip year">${p.year ?? "—"}</span>${has(p) && p.reviewed ? '<span class="chip ok">經作者校閱</span>' : ""}`;
   return `<a class="pcard${p.mustRead ? " must" : ""}" href="#${p.id}"><div class="band"></div><div class="pc-top">${top}</div>
@@ -678,7 +690,7 @@ function guideBlock(c, s) {
     <div class="guide-head"><h2>主題導讀</h2>${state.isOwner ? '<button class="btn" type="button" id="g-edit">編輯導讀</button>' : ""}</div>
     ${it.intro ? `<p class="g-intro">${esc(it.intro)}</p><button type="button" class="g-more" id="g-more">展開完整導讀</button>` : '<p class="hint">這個子主題還沒有導讀。</p>'}
     ${it.terms.length ? `<details class="terms-fold"><summary>名詞解釋（${it.terms.length}）</summary><dl class="terms">${it.terms.map(t => { const [k, ...v] = t.split(/[:：]/); return `<div><dt>${esc(k.trim())}</dt><dd>${esc(v.join("：").trim())}</dd></div>`; }).join("")}</dl></details>` : ""}
-    ${must.length && getView() !== "grid" ? `<div class="must-list"><h3>建議先讀</h3><ol>${must.map(p => `<li><a href="#${p.id}">${esc(p.titleZh || p.title)}</a> <span>${p.year ?? ""}</span></li>`).join("")}</ol></div>` : ""}
+    ${must.length && getView() !== "grid" ? `<div class="must-list"><h3>建議先讀</h3><ol>${must.map(p => `<li>${isLocked(p) ? `<span class="locked-txt">${esc(p.titleZh || p.title)}（校稿中）</span>` : `<a href="#${p.id}">${esc(p.titleZh || p.title)}</a>`} <span>${p.year ?? ""}</span></li>`).join("")}</ol></div>` : ""}
   </section>`;
 }
 
@@ -710,6 +722,11 @@ function paper(pid) {
   if (!base) return home();
   const p = view(base), c = catById(p.cat), s = subOf(p);
   if (state.editing === pid && !p.locked) return editor(p, c, s);
+  if (isLocked(p)) {
+    app.innerHTML = `<nav class="crumbs"><a href="#home">首頁</a><span>›</span><a href="#c${p.cat}-${p.sub}">${esc(c.zh)}</a></nav>
+      <section class="guide"><h2>${esc(p.titleZh || p.title)}</h2><p>這篇文獻的中文摘要正在由作者校稿，完成後會在這裡開放閱讀。</p><p><a href="#c${p.cat}-${p.sub}">← 回到 ${esc(s.en)}</a></p></section>`;
+    return;
+  }
   const path = state.priv[pid]?.path || "";
   const facts = [["研究類型", p.studyType], ["樣本數", p.n], ["期刊", p.citation], ["標籤", (p.tags || []).join("、")]].filter(([, v]) => v);
   const editBtn = state.isOwner && !p.locked ? `<button class="btn" type="button" id="edit">${has(p) ? "編輯這篇摘要" : "撰寫摘要"}</button>` : "";
