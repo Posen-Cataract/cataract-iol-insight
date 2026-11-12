@@ -271,6 +271,7 @@ footer .wrap { padding-top: 20px; padding-bottom: 28px; display: grid; gap: 4px;
 .fig-head h5 { margin: 0; font-size: 14.5px; color: var(--ink); }
 .fig-kind { font-size: 11.5px; color: var(--muted); white-space: nowrap; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
 .fig-kind.site { color: #8a6a26; background: #fbf4e4; border-color: #e8d3a4; }
+.fig-kind.ext { color: #3c5f86; background: #eef3f9; border-color: #c4d4e6; }
 .fig-cap { margin: 0; font-size: 13.5px; color: var(--ink); line-height: 1.7; }
 .layer-body .fig p { max-width: none; }
 .fig-zoom + .fig-note { text-align: center; margin-top: -4px; }
@@ -861,16 +862,21 @@ function tableFig(fg) {
   return `<div class="fig-table${wide ? " wide" : ""}"><table><thead><tr>${(fg.columns || []).map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${(fg.rows || []).map(r => `<tr>${r.map((c, i) => `<td${i && isNum(c) ? ' class="num"' : ""}>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 const imgSrc = fg => fg.assetId ? (READER ? "img/" + fg.assetId + ".png" : "/_blob/" + fg.assetId) : fg.src || "";
+function figLink(fg) {
+  if (fg.url && /^https?:\/\//i.test(fg.url)) return ` · <a href="${esc(fg.url)}" target="_blank" rel="noopener">查看來源</a>`;
+  if (fg.origin === "orig" || !fg.origin) return fg.kind === "image" && state.figOrigin ? ` · <a href="${esc(state.figOrigin)}" target="_blank" rel="noopener">查看原文</a>` : "";
+  return "";
+}
 function figHtml(fg, idx, own, move, bkey) {
   const body = fg.kind === "bar" ? barFig(fg) : fg.kind === "line" ? lineFig(fg) : fg.kind === "table" ? tableFig(fg)
     : fg.kind === "image" && fg.imgMissing ? `<p class="fig-ref">此為原文圖片，請見原文${state.figOrigin ? `（<a href="${esc(state.figOrigin)}" target="_blank" rel="noopener">查看原文</a>）` : ""}。</p>`
     : fg.kind === "image" && imgSrc(fg) ? `<button class="fig-zoom" type="button" data-zoom="${esc(imgSrc(fg))}" aria-label="放大圖片"><img src="${esc(imgSrc(fg))}" alt="${esc(fg.alt || fg.title || "")}" loading="lazy"></button><p class="fig-note">點圖片可放大</p>` : "";
   if (!body) return "";
   return `<figure class="fig" style="margin:0">
-    <div class="fig-head"><h5>${esc(fg.title || "")}</h5><span class="fig-kind${fg.origin === "site" ? " site" : ""}">${fg.origin === "site" ? "本站整理" : FIG_KIND[fg.kind] || ""}</span></div>
+    <div class="fig-head"><h5>${esc(fg.title || "")}</h5><span class="fig-kind${fg.origin === "site" ? " site" : fg.origin === "ext" ? " ext" : ""}">${fg.origin === "site" ? "本站整理" : fg.origin === "ext" ? "外部資料" : FIG_KIND[fg.kind] || ""}</span></div>
     ${body}
     ${fg.caption ? `<p class="fig-cap">${esc(fg.caption)}</p>` : ""}
-    ${fg.source ? `<p class="fig-src${fg.kind === "image" ? " img-src" : ""}">資料來源：${esc(fg.source)}${fg.kind === "image" && state.figOrigin ? ` · <a href="${esc(state.figOrigin)}" target="_blank" rel="noopener">查看原文</a>` : ""}</p>` : ""}
+    ${fg.source || fg.url ? `<p class="fig-src${fg.kind === "image" ? " img-src" : ""}">資料來源：${esc(fg.source || "")}${figLink(fg)}</p>` : ""}
     ${move || own || bkey ? `<div class="fig-tools">${move?.up ? `<button class="btn" type="button" data-figmove="${move.pos}" data-dir="-1" aria-label="往上移">↑ 上移</button>` : ""}${move?.down ? `<button class="btn" type="button" data-figmove="${move.pos}" data-dir="1" aria-label="往下移">↓ 下移</button>` : ""}${own ? `<button class="btn" type="button" data-figedit="${idx}">編輯</button><button class="btn ghost-danger" type="button" data-figdel="${idx}">刪除</button>` : ""}${bkey ? `<button class="btn" type="button" data-figbedit="${bkey}">編輯文字與數據</button>` : ""}</div>` : ""}
   </figure>`;
 }
@@ -915,13 +921,14 @@ function figForm(p, fg) {
   return `<form class="fig-form" id="figform">
     ${ed ? `<span class="chip" style="justify-self:start">編輯圖表</span>` : ""}
     <div class="row2"><div class="field"><label for="fg-kind">類型</label><select id="fg-kind" ${ed ? "disabled" : ""}><option value="image" ${fg?.kind === "image" ? "selected" : ""}>上傳圖片</option><option value="table" ${fg?.kind === "table" ? "selected" : ""}>貼上表格</option></select></div>
-    <div class="field"><label for="fg-origin">來源類型</label><select id="fg-origin"><option value="orig" ${fg?.origin !== "site" ? "selected" : ""}>原文資料（原文圖片或表格）</option><option value="site" ${fg?.origin === "site" ? "selected" : ""}>本站整理（自行構圖或歸納）</option></select></div></div>
+    <div class="field"><label for="fg-origin">來源類型</label><select id="fg-origin"><option value="orig" ${fg?.origin !== "site" && fg?.origin !== "ext" ? "selected" : ""}>原文資料（原文圖片或表格）</option><option value="site" ${fg?.origin === "site" ? "selected" : ""}>本站整理（自行構圖或歸納）</option><option value="ext" ${fg?.origin === "ext" ? "selected" : ""}>外部資料（其他網站、演講或文章）</option></select></div></div>
     <div class="row2"><div class="field" style="grid-column:1/-1"><label for="fg-title">圖表標題</label><input id="fg-title" required value="${esc(fg?.title || "")}"></div></div>
     <div class="field" id="fg-filebox"><label for="fg-file">${ed ? "更換圖片 <span class=\"hint\">不選檔案就保留原本的圖片</span>" : "圖片檔 <span class=\"hint\">PNG / JPG，建議寬 1200 px 以內</span>"}</label>${ed && fg.kind === "image" ? `<img src="${esc(imgSrc(fg))}" alt="" style="max-height:120px;justify-self:start">` : ""}<input id="fg-file" type="file" accept="image/*"></div>
     <div class="field" id="fg-tablebox" hidden><label for="fg-table">表格內容 <span class="hint">可直接從 Excel 複製貼上；第一列為欄位名稱</span></label><textarea id="fg-table" rows="6">${esc(tsv)}</textarea></div>
     <div class="field"><label for="fg-cap">說明</label><textarea id="fg-cap" rows="3">${esc(fg?.caption || "")}</textarea></div>
     <div class="field"><label for="fg-src">資料來源 <span class="hint">${ed ? "圖號、作者、期刊與年份" : "已自動帶入這篇的出處，請把 ＿ 改成圖號"}</span></label><input id="fg-src" value="${esc(ed ? fg.source || "" : figCite(p))}"></div>
-    <p class="fig-note">原文圖片請完整註明出處（圖號、作者、期刊與年份）；文章頁會在圖下方附上原文連結。</p>
+    <div class="field"><label for="fg-url">來源網址 <span class="hint">選填；填了之後圖下方的連結會改指向這個網址（外部資料請務必填寫）</span></label><input id="fg-url" type="url" placeholder="https://" value="${esc(fg?.url || "")}"></div>
+    <p class="fig-note">原文圖片請完整註明出處（圖號、作者、期刊與年份）；沒填來源網址時，文章頁會在圖下方附上這篇原文的連結。</p>
     <div class="actions"><button class="btn primary" type="submit" id="fg-save">${ed ? "儲存修改" : "加入"}</button><button class="btn" type="button" id="fg-cancel">取消</button><span class="status" id="fg-status" role="status"></span></div>
   </form>`;
 }
@@ -1024,7 +1031,7 @@ function wireFigs(p) {
     e.preventDefault();
     if (!state.db) return say("目前連不到資料庫，請重新整理後再試。", true);
     const v = id => form.querySelector(id).value.trim();
-    const item = { ...(old || {}), kind: old ? old.kind : kind.value, title: v("#fg-title"), caption: v("#fg-cap"), source: v("#fg-src"), origin: form.querySelector("#fg-origin").value === "site" ? "site" : "orig", ...(old ? { editedAt: new Date().toISOString() } : { addedAt: new Date().toISOString(), fid: "f" + Date.now().toString(36) }) };
+    const item = { ...(old || {}), kind: old ? old.kind : kind.value, title: v("#fg-title"), caption: v("#fg-cap"), source: v("#fg-src"), origin: ["site", "ext"].includes(form.querySelector("#fg-origin").value) ? form.querySelector("#fg-origin").value : "orig", url: v("#fg-url"), ...(old ? { editedAt: new Date().toISOString() } : { addedAt: new Date().toISOString(), fid: "f" + Date.now().toString(36) }) };
     const btn = form.querySelector("#fg-save"); btn.disabled = true;
     try {
       if (item.kind === "image") {
