@@ -41,6 +41,7 @@
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body { background: var(--bg); color: var(--ink); font: 15.5px/1.7 var(--font-body); }
 a { color: var(--accent); }
 button, input, textarea { font: inherit; color: inherit; }
@@ -288,12 +289,15 @@ footer .wrap { padding-top: 20px; padding-bottom: 28px; display: grid; gap: 4px;
 .fig svg .v { fill: var(--ink); font-family: var(--font-mono); font-size: 11.5px; }
 .fig-table { overflow-x: auto; max-width: 100%; }
 .fig, .figs, .figs-wrap { min-width: 0; }
-.fig-table th { white-space: nowrap; }
-@media (max-width: 600px) { .fig-table table { min-width: 560px; } }
+.fig-table.wide th { white-space: nowrap; }
+@media (max-width: 600px) { .fig-table.wide table { min-width: 560px; } .fig-table.wide::after { content: "← 左右滑動查看完整表格 →"; display: block; text-align: center; font-size: 11.5px; color: var(--muted); padding-top: 6px; } }
 .fig-table table { border-collapse: collapse; width: 100%; font-size: 13px; }
 .fig-table th, .fig-table td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
 .fig-table th { color: var(--muted); font-weight: 600; font-size: 12px; background: var(--accent-soft); }
-.fig-table td:not(:first-child) { font-family: var(--font-mono); font-size: 12.5px; }
+.fig-table td.num { font-family: var(--font-mono); font-size: 12.5px; }
+.fig-table td { line-height: 1.55; overflow-wrap: break-word; }
+.fig-table td:first-child, .fig-table th:first-child { min-width: 4.6em; }
+.fig-table.wide td { white-space: nowrap; }
 .fig img { max-width: 100%; height: auto; border-radius: 6px; border: 1px solid var(--line); background: #fff; justify-self: center; }
 .fig-tools { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
 .fig-form { border: 1px dashed var(--accent); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; }
@@ -851,7 +855,9 @@ function lineFig(fg) {
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(fg.title || "")}">${grid}${xl}${lines}</svg>${legend(series)}${fg.lowerBetter ? '<p class="fig-note">縱軸數值越低代表結果越好。</p>' : ""}`;
 }
 function tableFig(fg) {
-  return `<div class="fig-table"><table><thead><tr>${(fg.columns || []).map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${(fg.rows || []).map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  const isNum = c => /^[\s\d.,%±<>≤≥–\-+()DdlogMARmn°/:×]*$/.test(String(c)) && /\d/.test(String(c));
+  const wide = (fg.columns || []).length > 3;
+  return `<div class="fig-table${wide ? " wide" : ""}"><table><thead><tr>${(fg.columns || []).map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${(fg.rows || []).map(r => `<tr>${r.map((c, i) => `<td${i && isNum(c) ? ' class="num"' : ""}>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 const imgSrc = fg => fg.assetId ? (READER ? "img/" + fg.assetId + ".png" : "/_blob/" + fg.assetId) : fg.src || "";
 function figHtml(fg, idx, own, move, bkey) {
