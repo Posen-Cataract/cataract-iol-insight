@@ -1015,7 +1015,7 @@ function inlineFig(title) {
     <figcaption><b>${esc(fg.title)}</b><span class="fig-kind${fg.origin === "site" ? " site" : fg.origin === "ext" ? " ext" : ""}">${kind}</span>${fg.caption ? `<span class="nfc">${esc(fg.caption)}</span>` : ""}${fg.source || fg.url ? `<span class="nfs">資料來源：${esc(fg.source || "")}${figLink(fg)}</span>` : ""}</figcaption></figure>`;
 }
 function noteHtml(src) {
-  const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/([A-Za-zλ])_([A-Za-z0-9]{1,3})(?![A-Za-z0-9])/g, "$1<sub>$2</sub>");
   const fml = s => esc(s).replace(/_\{([^}]+)\}|_([A-Za-z0-9]+)/g, (m, a, b) => `<sub>${a || b}</sub>`);
   const out = []; let list = null, sec = false;
   const flush = () => { if (list) { out.push(`<ul>${list.join("")}</ul>`); list = null; } };
