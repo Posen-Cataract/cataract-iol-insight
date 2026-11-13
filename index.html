@@ -294,6 +294,14 @@ li .qa { display: block; color: color-mix(in srgb, var(--ink) 72%, var(--surface
 .note ul { margin: 0 0 10px; padding-left: 1.3em; }
 .note hr { border: 0; border-top: 1px dashed var(--line); margin: 16px 0; }
 .note .nf { margin: 8px 0 12px; padding: 8px 12px; text-align: center; font-family: "Cambria Math", "Times New Roman", serif; font-size: 17px; background: color-mix(in srgb, var(--ink) 4%, var(--surface)); border-radius: 8px; overflow-x: auto; }
+.note .nfig { margin: 14px 0 16px; }
+.note .nfig img { max-width: 100%; max-height: 520px; width: auto; height: auto; border-radius: 10px; border: 1px solid var(--line); display: block; margin: 0 auto; }
+.note .nfig .fig-zoom { display: block; width: 100%; max-width: 640px; margin: 0 auto; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.note .nfig figcaption { max-width: 640px; margin: 8px auto 0; font-size: 13px; line-height: 1.6; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+.note .nfig figcaption b { color: var(--ink); font-weight: 600; }
+.note .nfig .nfc, .note .nfig .nfs { flex-basis: 100%; }
+.note .nmiss { color: #b3261e; font-size: 13px; }
+.emb-note { font-size: 12.5px; color: var(--muted); margin: 0 0 -6px; }
 .note .ncall { margin: 10px 0 12px; padding: 10px 14px; border-left: 3px solid #c9a35a; background: #fbf4e4; color: #5b4519; font-weight: 600; border-radius: 0 8px 8px 0; }
 .series { margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
 .series-h { font-size: 12.5px; color: var(--muted); margin-bottom: 6px; letter-spacing: .5px; }
@@ -993,6 +1001,15 @@ const FIG_COLORS = ["var(--accent)", "var(--gold)", "var(--muted)"];
 const fmtN = v => (Math.round(v * 100) / 100).toString();
 const FIG_KIND = { bar: "依原文數據重繪", line: "依原文數據重繪", table: "原文表格整理", image: "原文圖片", note: "圖文解說" };
 // Lightweight markup for "note" figures: ## / ### headings, - lists, --- rules, **bold**, $$formula$$ lines (x_sub), > callouts.
+// [[圖：標題]] inside a note embeds the image figure with that title right there; readers then see it only in place.
+const embedTitles = items => new Set(items.filter(f => f.kind === "note").flatMap(f => [...String(f.body || "").matchAll(/^\s*\[\[圖[:：]\s*(.+?)\]\]\s*$/gm)].map(m => m[1].trim())));
+function inlineFig(title) {
+  const fg = (state.noteFigs || []).find(f => f.kind === "image" && (f.title || "").trim() === title);
+  if (!fg) return state.isOwner ? `<p class="nmiss">找不到標題為「${esc(title)}」的圖片：請先在下方新增圖片，標題需完全相同。</p>` : "";
+  const src = imgSrc(fg), kind = fg.origin === "site" ? "本站整理" : fg.origin === "ext" ? "外部資料" : "原文圖片";
+  return `<figure class="nfig">${fg.imgMissing || !src ? `<p class="fig-ref">圖片暫時無法顯示。</p>` : `<button class="fig-zoom" type="button" data-zoom="${esc(src)}" aria-label="放大圖片"><img src="${esc(src)}" alt="${esc(fg.alt || fg.title || "")}" loading="lazy"></button>`}
+    <figcaption><b>${esc(fg.title)}</b><span class="fig-kind${fg.origin === "site" ? " site" : fg.origin === "ext" ? " ext" : ""}">${kind}</span>${fg.caption ? `<span class="nfc">${esc(fg.caption)}</span>` : ""}${fg.source || fg.url ? `<span class="nfs">資料來源：${esc(fg.source || "")}${figLink(fg)}</span>` : ""}</figcaption></figure>`;
+}
 function noteHtml(src) {
   const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
   const fml = s => esc(s).replace(/_\{([^}]+)\}|_([A-Za-z0-9]+)/g, (m, a, b) => `<sub>${a || b}</sub>`);
@@ -1008,6 +1025,7 @@ function noteHtml(src) {
     else if (l.startsWith("## ")) out.push(`<h4>${inl(l.slice(3))}</h4>`);
     else if (/^\$\$.*\$\$$/.test(l)) out.push(`<div class="nf">${fml(l.slice(2, -2).trim())}</div>`);
     else if (l.startsWith("> ")) out.push(`<div class="ncall">${inl(l.slice(2))}</div>`);
+    else if (/^\[\[圖[:：]\s*.+\]\]$/.test(l)) out.push(inlineFig(l.replace(/^\[\[圖[:：]\s*/, "").replace(/\]\]$/, "").trim()));
     else out.push(`<p>${inl(l)}</p>`);
   }
   flush();
@@ -1095,12 +1113,15 @@ function figuresBlock(p) {
   if (!base.length && !extra.length && !(state.isOwner && !p.locked)) return "";
   const canEdit = state.isOwner && !p.locked;
   const add = canEdit ? (state.addingFig === p.id ? figForm(p) : `<button class="btn fig-add" type="button" id="figadd">＋ 新增圖表</button>`) : "";
-  const entries = figEntries(p);
-  const cards = entries.map((e, pos) => e.online && state.addingFig === p.id && state.figEdit === e.idx ? figForm(p, e.fig)
+  state.noteFigs = extra;
+  const emb = embedTitles(extra);
+  const isEmb = e => e.online && e.fig.kind === "image" && emb.has((e.fig.title || "").trim());
+  const entries = figEntries(p).filter(e => canEdit || !isEmb(e));
+  const cards = entries.map((e, pos) => (isEmb(e) ? `<p class="emb-note">↓ 這張圖已嵌入上方解說內文，讀者只會在內文看到；要修改圖片或來源請在這裡編輯。</p>` : "") + ( e.online && state.addingFig === p.id && state.figEdit === e.idx ? figForm(p, e.fig)
     : !e.online && state.addingFig === p.id && state.figEdit === e.key ? builtinForm(e)
-    : figHtml(e.fig, e.idx, canEdit && e.online, canEdit && entries.length > 1 ? { pos, up: pos > 0, down: pos < entries.length - 1 } : null, canEdit && !e.online && e.fig.kind !== "image" ? e.key : null)).filter(Boolean);
+    : figHtml(e.fig, e.idx, canEdit && e.online, canEdit && entries.length > 1 ? { pos, up: pos > 0, down: pos < entries.length - 1 } : null, canEdit && !e.online && e.fig.kind !== "image" ? e.key : null))).filter(Boolean);
   if (state.figEdit == null && add) cards.push(add);
-  const n = base.length + extra.length;
+  const n = base.length + extra.filter(f => !(f.kind === "image" && emb.has((f.title || "").trim()))).length;
   return `<details class="fold figs-wrap" id="s-figs" open><summary><h4>${p.series ? "圖文解說" : "重點圖表"}${n ? `（${n}）` : ""}</h4><span class="chev" aria-hidden="true"></span></summary><div class="fold-body"><div class="figs">${cards.join("")}</div></div></details>`;
 }
 function figCite(p) {
@@ -1119,7 +1140,7 @@ function figForm(p, fg) {
     <div class="row2"><div class="field" style="grid-column:1/-1"><label for="fg-title">圖表標題</label><input id="fg-title" required value="${esc(fg?.title || "")}"></div></div>
     <div class="field" id="fg-filebox"><label for="fg-file">${ed ? "更換圖片 <span class=\"hint\">不選檔案就保留原本的圖片</span>" : "圖片檔 <span class=\"hint\">PNG / JPG，建議寬 1200 px 以內</span>"}</label>${ed && fg.kind === "image" ? `<img src="${esc(imgSrc(fg))}" alt="" style="max-height:120px;justify-self:start">` : ""}<input id="fg-file" type="file" accept="image/*"></div>
     <div class="field" id="fg-tablebox" hidden><label for="fg-table">表格內容 <span class="hint">可直接從 Excel 複製貼上；第一列為欄位名稱</span></label><textarea id="fg-table" rows="6">${esc(tsv)}</textarea></div>
-    <div class="field" id="fg-notebox" hidden><label for="fg-note">解說內容 <span class="hint">一行一段。## 大標、### 小標、- 列點、--- 分隔線、**粗體**、$$公式$$（x_下標）、> 重點框</span></label><textarea id="fg-note" rows="16" style="font-family:var(--font-mono);font-size:13px">${esc(fg?.body || "")}</textarea></div>
+    <div class="field" id="fg-notebox" hidden><label for="fg-note">解說內容 <span class="hint">一行一段。## 大標、### 小標、- 列點、--- 分隔線、**粗體**、$$公式$$（x_下標）、> 重點框、[[圖：圖片標題]] 把同一頁的圖片插在這裡</span></label><textarea id="fg-note" rows="16" style="font-family:var(--font-mono);font-size:13px">${esc(fg?.body || "")}</textarea></div>
     <div class="field"><label for="fg-cap">說明</label><textarea id="fg-cap" rows="3">${esc(fg?.caption || "")}</textarea></div>
     <div class="field"><label for="fg-src">資料來源 <span class="hint">${ed ? "圖號、作者、期刊與年份" : "已自動帶入這篇的出處，請把 ＿ 改成圖號"}</span></label><input id="fg-src" value="${esc(ed ? fg.source || "" : figCite(p))}"></div>
     <div class="field"><label for="fg-url">來源網址 <span class="hint">選填；填了之後圖下方的連結會改指向這個網址（外部資料請務必填寫）</span></label><input id="fg-url" type="url" placeholder="https://" value="${esc(fg?.url || "")}"></div>
