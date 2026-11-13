@@ -302,6 +302,10 @@ li .qa { display: block; color: color-mix(in srgb, var(--ink) 72%, var(--surface
 .note .nfig .nfc, .note .nfig .nfs { flex-basis: 100%; }
 .note .nmiss { color: #b3261e; font-size: 13px; }
 .emb-note { font-size: 12.5px; color: var(--muted); margin: 0 0 -6px; }
+.note .nsum { margin: 18px 0 4px; padding: 16px 18px 6px; border-radius: 12px; background: color-mix(in srgb, #0f6b74 9%, var(--surface)); border: 1px solid color-mix(in srgb, #0f6b74 25%, var(--surface)); }
+.note .nsum h4 { margin: 0 0 10px; color: color-mix(in srgb, #0f6b74 75%, var(--ink)); }
+.note .nsum .ncall { background: var(--surface); border-left-color: #0f6b74; color: var(--ink); }
+.note .nsum .ncall:last-child { text-align: center; border-left: 0; border-radius: 8px; color: color-mix(in srgb, #0f6b74 80%, var(--ink)); }
 .note .ncall { margin: 10px 0 12px; padding: 10px 14px; border-left: 3px solid #c9a35a; background: #fbf4e4; color: #5b4519; font-weight: 600; border-radius: 0 8px 8px 0; }
 .series { margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
 .series-h { font-size: 12.5px; color: var(--muted); margin-bottom: 6px; letter-spacing: .5px; }
@@ -1013,7 +1017,7 @@ function inlineFig(title) {
 function noteHtml(src) {
   const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
   const fml = s => esc(s).replace(/_\{([^}]+)\}|_([A-Za-z0-9]+)/g, (m, a, b) => `<sub>${a || b}</sub>`);
-  const out = []; let list = null;
+  const out = []; let list = null, sec = false;
   const flush = () => { if (list) { out.push(`<ul>${list.join("")}</ul>`); list = null; } };
   for (const raw of String(src || "").split(/\r?\n/)) {
     const l = raw.trim();
@@ -1022,14 +1026,15 @@ function noteHtml(src) {
     flush();
     if (/^---+$/.test(l)) out.push("<hr>");
     else if (l.startsWith("### ")) out.push(`<h5>${inl(l.slice(4))}</h5>`);
-    else if (l.startsWith("## ")) out.push(`<h4>${inl(l.slice(3))}</h4>`);
+    else if (l.startsWith("## ")) { if (sec) out.push("</div>"); out.push(`<div class="nsum"><h4>${inl(l.slice(3))}</h4>`); sec = true; } // a ## section is a takeaway box
     else if (/^\$\$.*\$\$$/.test(l)) out.push(`<div class="nf">${fml(l.slice(2, -2).trim())}</div>`);
     else if (l.startsWith("> ")) out.push(`<div class="ncall">${inl(l.slice(2))}</div>`);
     else if (/^\[\[圖[:：]\s*.+\]\]$/.test(l)) out.push(inlineFig(l.replace(/^\[\[圖[:：]\s*/, "").replace(/\]\]$/, "").trim()));
     else out.push(`<p>${inl(l)}</p>`);
   }
   flush();
-  return `<div class="note">${out.join("")}</div>`;
+  if (sec) out.push("</div>");
+  return `<div class="note">${out.join("").replace(/<hr>(<div class="nsum">)/g, "$1")}</div>`;
 }
 function barFig(fg) {
   const series = fg.series || [];
