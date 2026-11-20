@@ -364,6 +364,22 @@ li .qa { display: block; color: color-mix(in srgb, var(--ink) 72%, var(--surface
 .lc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 6px; }
 .lc-head a { color: inherit; } .lc-head span { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
 .learn-card ol { margin: 0; padding-left: 1.4em; display: grid; gap: 4px; font-size: 14.5px; }
+.ico { width: 100%; height: 100%; display: block; }
+.topic-head { justify-content: flex-start; } .topic-head h3 { flex: 1; word-break: keep-all; }
+.topic-ico, .study-ico { flex: none; width: 46px; height: 46px; padding: 9px; border-radius: 12px; color: var(--accent, #0f6b74); background: color-mix(in srgb, var(--accent, #0f6b74) 10%, var(--surface)); }
+.study-zone { display: grid; gap: 14px; margin-bottom: 28px; }
+.studies { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.study { display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px; border-radius: 14px; text-decoration: none; color: var(--ink); background: linear-gradient(180deg, color-mix(in srgb, #1d6b55 8%, var(--surface)), var(--surface)); border: 1px solid color-mix(in srgb, #1d6b55 30%, var(--surface)); }
+.study:hover { box-shadow: 0 6px 22px rgba(13, 36, 64, .10); }
+.study .study-ico { color: #1d6b55; background: color-mix(in srgb, #1d6b55 13%, var(--surface)); }
+.study-body { display: grid; gap: 4px; min-width: 0; flex: 1; } .study-body small { font-size: 12.5px; color: var(--muted); }
+.study h3 { font-size: 18px; margin: 0; } .study p { margin: 2px 0; font-size: 14px; color: color-mix(in srgb, var(--ink) 75%, var(--surface)); }
+.study-meta { font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 4px; } .study-meta b { color: #1d6b55; font-weight: 600; }
+.lc-title { display: inline-flex; align-items: center; gap: 8px; } .lc-ico { width: 26px; height: 26px; color: #1d6b55; flex: none; }
+.u-thumb { width: 104px; height: 64px; object-fit: cover; object-position: center; border-radius: 8px; border: 1px solid var(--line); background: #fff; flex: none; }
+.qlist .u-thumb { float: right; width: 176px; height: 110px; object-fit: contain; padding: 4px; margin: 2px 0 8px 16px; } .qlist > li.u-prev::after { content: ""; display: block; clear: both; }
+.h1-ico { display: inline-block; width: 34px; height: 34px; vertical-align: -6px; margin-right: 10px; color: #1d6b55; }
+@media (max-width: 560px) { .qlist .u-thumb { float: none; display: block; width: 100%; height: 120px; margin: 6px 0; } }
 .u-min { margin-left: 8px; font-size: 12px; color: var(--muted); white-space: nowrap; }
 .lc-hook { display: block; font-size: 13.5px; color: color-mix(in srgb, var(--ink) 70%, var(--surface)); margin: 1px 0 4px; }
 .u-prev + .u-prev { margin-top: 10px; }
@@ -594,13 +610,24 @@ function hero(on) {
 
 function home() {
   hero(true);
+  const us = lessonsAll();
+  const study = (DATA.series || []).map(S => {
+    const units = S.units.map(id => us.find(u => u.id === id)), ov = units[0], open = units.slice(1).filter(u => u && !lessonLocked(u));
+    if (!ov || lessonLocked(ov) || !open.length) return "";
+    const c = catById(S.cat), mins = open.reduce((t, u) => t + readMin(u), 0);
+    return `<a class="study" href="#${ov.id}"><span class="study-ico">${SERIES_ICONS[S.id] || ""}</span>
+      <div class="study-body"><small>${esc(c ? c.zh : "")}・${S.units.length - 1} 個單元</small><h3>${esc(S.title)}</h3>
+      ${open[0].hook ? `<p>${esc(open[0].hook)}</p>` : ""}
+      <span class="study-meta">已開放 ${open.length} 個單元・共約 ${mins} 分鐘<b>開始閱讀 →</b></span></div></a>`;
+  }).join("");
   app.innerHTML = `
+    ${study ? `<section class="study-zone"><div class="sec-head"><h2>學習專區</h2><span>本站整理的基礎觀念單元，從問題出發</span></div><div class="studies">${study}</div></section>` : ""}
     <section style="display:grid;gap:14px">
       <div class="sec-head"><h2>依主題瀏覽</h2><span>${['零','一','二','三','四','五','六','七','八','九','十'][DATA.categories.length] || DATA.categories.length}大知識分類</span></div>
       <div class="topics">${DATA.categories.map(c => {
         const list = inCat(c.id), n = list.filter(has).length;
         return `<a class="topic" href="#c${c.id}">
-          <div class="topic-head"><h3>${esc(c.zh)}<small>${c.id} · ${esc(c.en)}</small></h3><span class="count">${list.filter(p => !isPart(p)).length} 篇</span></div>
+          <div class="topic-head"><span class="topic-ico">${CAT_ICONS[c.id] || ""}</span><h3>${esc(c.zh)}<small>${c.id} · ${esc(c.en)}</small></h3><span class="count">${list.filter(p => !isPart(p)).length} 篇</span></div>
           <ul>${c.subs.map(s => { const k = inCat(c.id, s.id).length; return `<li class="${k ? "" : "zero"}"><span>${esc(s.en)}</span><span>${k}</span></li>`; }).join("")}</ul>
           ${n ? `<span style="font-size:13px;color:var(--accent)">${n} 篇已有中文摘要</span>` : ""}
         </a>`;
@@ -608,6 +635,30 @@ function home() {
     </section>`;
 }
 
+
+
+// ---- Line icons (site-drawn optics symbols, one stroke style) for topics and study series ----
+const ICO = d => `<svg class="ico" viewBox="0 0 32 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const CAT_ICONS = {
+  "01": ICO(`<path d="M13 6c-3 6-3 14 0 20M13 6c3 6 3 14 0 20"/><path d="M3 10h9M3 16h10M3 22h9" opacity=".55"/><path d="M15 10l13 6M16 16h12M15 22l13-6"/><circle cx="28" cy="16" r="1.2" fill="currentColor"/>`),
+  "02": ICO(`<path d="M27 16c0 6.1-4.9 11-11 11-4.6 0-8.5-2.8-10.2-6.8C4.6 19 4 17.6 4 16s.6-3 1.8-4.2C7.5 7.8 11.4 5 16 5c6.1 0 11 4.9 11 11z"/><ellipse cx="11" cy="16" rx="1.8" ry="3.6" opacity=".55"/><path d="M6 16h19"/><path d="M8 13.8L6 16l2 2.2M23 13.8l2 2.2-2 2.2"/>`),
+  "03": ICO(`<circle cx="16" cy="16" r="7.5"/><circle cx="16" cy="16" r="3.4" opacity=".35"/><path d="M11 10.2C7.5 7.5 7.8 4 12.5 3M21 21.8c3.5 2.7 3.2 6.2-1.5 7.2"/>`),
+  "04": ICO(`<circle cx="16" cy="16" r="5.5"/><path d="M11.2 13.6C8.5 11.5 6 9 4.6 6.2M20.8 18.4c2.7 2.1 5.2 4.6 6.6 7.4"/><path d="M5.5 23.5A13 13 0 0 1 8 6.5M26.5 8.5A13 13 0 0 1 24 25.5" opacity=".45" stroke-dasharray="2 2.6"/><circle cx="4.4" cy="5.8" r="1.4" fill="currentColor"/><circle cx="27.6" cy="26.2" r="1.4" fill="currentColor"/>`),
+  "05": ICO(`<path d="M9 4h11l5 5v19H9z"/><path d="M20 4v5h5"/><path d="M12.5 14h9M12.5 18h9M12.5 22h6"/><path d="M6 8v22h15" opacity=".45"/>`),
+  "06": ICO(`<rect x="5" y="7" width="22" height="18" rx="2"/><circle cx="12" cy="16" r="3.5"/><path d="M18 13h6M18 17h6M18 21h4"/>`)
+};
+const SERIES_ICONS = {
+  "L01": ICO(`<circle cx="16" cy="16" r="12.5"/><circle cx="16" cy="16" r="4.5"/><circle cx="16" cy="16" r="7.4" opacity=".8"/><circle cx="16" cy="16" r="9.4" opacity=".65"/><circle cx="16" cy="16" r="11" opacity=".5"/>`),
+  "L02": ICO(`<path d="M2 7l11 9M2 25l11-9M2 16h11" opacity=".6"/><path d="M13 16h16" stroke-width="3.2"/><path d="M13 11.5v9M29 11.5v9" opacity=".45"/>`)
+};
+// First image of a unit (or lessons.json "thumb" fid) as a preview thumbnail.
+function unitThumb(u) {
+  const figs = (u.liveFigures || []).filter(f => f.kind === "image" && (f.assetId || f.src) && !f.imgMissing);
+  const ord = u.liveOrder || [];
+  figs.sort((a, b) => (ord.indexOf(a.fid) + 1 || 999) - (ord.indexOf(b.fid) + 1 || 999));
+  const f = (u.thumb && figs.find(x => x.fid === u.thumb)) || figs[0];
+  return f ? `<img class="u-thumb" src="${esc(imgSrc(f))}" alt="" loading="lazy">` : "";
+}
 
 // ---- Share links: one site, deep links to a topic (#c04), a subtopic (#c04-03) or a paper (#p…) ----
 // The same page builds two sites: the Claude editing site and the public read-only site (build_reader.py sets READER).
@@ -898,7 +949,7 @@ function learnZone(cid, sub) {
   const us = lessonsAll();
   return `<section class="learnzone"><div class="learn-head"><span class="chip learn">學習專區・本站整理</span><h2>先建立背景知識，再進入臨床文獻</h2><p>本站整理的基礎觀念單元，建議在閱讀下方文獻前先讀，讀原文時會更快吸收。</p></div>
     ${list.map(s => { const units = s.units.map(id => us.find(u => u.id === id)); const ov = units[0];
-      return `<div class="learn-card"><div class="lc-head">${lessonLocked(ov) ? `<b>${esc(s.title)}</b>` : `<a href="#${ov.id}"><b>${esc(s.title)}</b></a>`}<span>${units.length - 1} 個單元</span></div>
+      return `<div class="learn-card"><div class="lc-head"><span class="lc-title"><span class="lc-ico">${SERIES_ICONS[s.id] || ""}</span>${lessonLocked(ov) ? `<b>${esc(s.title)}</b>` : `<a href="#${ov.id}"><b>${esc(s.title)}</b></a>`}</span><span>${units.length - 1} 個單元</span></div>
         <ol>${units.slice(1).map((u, i) => `<li>${lessonLocked(u) ? `<span class="lc-wip">${esc(u.title)}<small>整理中</small></span>` : `<a href="#${u.id}">${esc(u.title)}</a>${minChip(u)}${u.hook ? `<span class="lc-hook">${esc(u.hook)}</span>` : ""}`}</li>`).join("")}</ol></div>`; }).join("")}
   </section>`;
 }
@@ -950,7 +1001,7 @@ function lesson(id) {
   const unitList = n === 0 ? `<ol class="qlist">${s.units.slice(1).map(uid => { const x = us.find(y => y.id === uid);
     if (lessonLocked(x)) return `<li><b class="q">${esc(x.title)}（整理中）</b>${x.desc ? `<span class="qa">${esc(descParts(x.desc).lead)}</span>` : ""}</li>`;
     const d = descParts(x.desc), tk = takeaways(x);
-    return `<li class="u-prev"><a class="q" href="#${uid}"><b>${esc(x.title)}</b>${minChip(x)}</a>${x.hook ? `<span class="u-hook">${esc(x.hook)}</span>` : ""}${d.lead ? `<span class="qa">${esc(d.lead)}</span>` : ""}${d.q ? `<span class="u-q"><b>核心問題</b>${esc(d.q)}</span>` : ""}${tk.length ? `<span class="u-tk"><b>讀完你會知道</b><ul>${tk.map(t => `<li>${esc(t)}</li>`).join("")}</ul></span>` : ""}</li>`; }).join("")}</ol>` : "";
+    return `<li class="u-prev">${unitThumb(x)}<a class="q" href="#${uid}"><b>${esc(x.title)}</b>${minChip(x)}</a>${x.hook ? `<span class="u-hook">${esc(x.hook)}</span>` : ""}${d.lead ? `<span class="qa">${esc(d.lead)}</span>` : ""}${d.q ? `<span class="u-q"><b>核心問題</b>${esc(d.q)}</span>` : ""}${tk.length ? `<span class="u-tk"><b>讀完你會知道</b><ul>${tk.map(t => `<li>${esc(t)}</li>`).join("")}</ul></span>` : ""}</li>`; }).join("")}</ol>` : "";
   const editBtn = state.isOwner && !u.locked ? `<button class="btn" type="button" id="edit">編輯這個單元</button>` : "";
   const rail = `${n ? `<div class="rail-box">${lessonNav(s, id)}</div>` : ""}<div class="rail-box"><h3>本頁小節</h3><ol class="toc" id="rail-toc"></ol></div>`;
   app.innerHTML = `${crumbs}${readingLayout(`
@@ -958,7 +1009,7 @@ function lesson(id) {
       <div class="sheet-head">
         <div class="tags" style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip learn">學習專區</span><span class="chip">本站整理</span>${n ? `<span class="chip">單元 ${n} / ${N}</span><span class="chip">約 ${readMin(u)} 分鐘</span>` : `<span class="chip">系列總覽</span>`}</div>
         ${n ? `<div class="ls-series"><a href="#${s.units[0]}">${esc(s.title)}</a></div>` : ""}
-        <h1>${esc(n ? `${n}｜${u.title}` : s.title)}</h1>
+        <h1>${n ? "" : `<span class="h1-ico">${SERIES_ICONS[s.id] || ""}</span>`}${esc(n ? `${n}｜${u.title}` : s.title)}</h1>
         <div class="source">${shareBtn(n ? "分享這個單元" : "分享這個系列", id)}${editBtn}</div>
         ${state.isOwner ? lockBar(u) : ""}
         ${n ? `<div class="head-only">${lessonNav(s, id)}</div>` : ""}
