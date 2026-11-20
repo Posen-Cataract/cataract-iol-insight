@@ -462,10 +462,31 @@ a.q { color: inherit; text-decoration: none; } a.q:hover b { text-decoration: un
 .unlockf { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-weight: 400; }
 .unlockf input { width: 90px; font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); letter-spacing: .2em; }
 .figs-first { display: grid; gap: 6px; }
+.print-only { display: none; }
 @media print {
-  body > * { display: none !important; }
-  body::before { content: "Cataract & IOL Insight 的內容僅供線上閱讀，請至網站查閱：https://claude.ai/artifact/82a8AZAc6mBKCchJnBfvqQ"; display: block; padding: 40mm 20mm; font: 12pt/1.8 system-ui, sans-serif; color: #142538; }
+  body:not(.printable) > * { display: none !important; }
+  body:not(.printable)::before { content: "此頁面僅供線上閱讀；本站的「學習專區」單元可列印。請至網站查閱：https://posen-cataract.github.io/cataract-iol-insight/"; display: block; padding: 40mm 20mm; font: 12pt/1.8 system-ui, sans-serif; color: #142538; }
+  @page { size: A4; margin: 16mm 15mm 18mm;
+    @bottom-left { content: "Cataract & IOL Insight｜posen-cataract.github.io/cataract-iol-insight｜請以線上最新版為準"; font: 8pt system-ui, sans-serif; color: #5b6b7b; }
+    @bottom-right { content: counter(page) " / " counter(pages); font: 8pt system-ui, sans-serif; color: #5b6b7b; } }
+  body.printable { background: #fff !important; }
+  body.printable .mast, body.printable #hero, body.printable footer, body.printable .crumbs, body.printable .rail, body.printable .source, body.printable .head-only,
+  body.printable .ls-pager, body.printable .fig-note, body.printable .fig-tools, body.printable .chev, body.printable .lock-bar, body.printable .qlist .u-thumb { display: none !important; }
+  body.printable .print-only { display: block; }
+  body.printable #app { max-width: none; padding: 0; margin: 0; }
+  body.printable .reading { display: block; }
+  body.printable .sheet { border: none !important; box-shadow: none !important; padding: 0 !important; background: #fff !important; }
+  body.printable .sheet-head, body.printable .sheet-body { padding-left: 0 !important; padding-right: 0 !important; }
+  body.printable a { color: inherit; text-decoration: none; }
+  body.printable .fig:has(> .fig-zoom), body.printable .fig:has(.fig-table), body.printable .nfig, body.printable .u-open, body.printable .ls-recap, body.printable blockquote, body.printable .nflow { break-inside: avoid; }
+  body.printable h1, body.printable h2, body.printable h3, body.printable h4, body.printable h5 { break-after: avoid; }
+  body.printable img { max-height: 120mm; width: auto; max-width: 100%; }
+  body.printable .orig-img img, body.printable .orig-img .fig-zoom { display: none !important; }
+  body.printable * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+.print-meta { font-size: 9.5pt; color: #5b6b7b; border-bottom: 1px solid #d9dee3; padding-bottom: 6px; margin-bottom: 10px; }
+.print-end { margin-top: 18px; padding-top: 8px; border-top: 1px solid #d9dee3; font-size: 9pt; color: #5b6b7b; line-height: 1.7; }
+.print-orig { margin: 6px 0; padding: 10px 12px; border: 1px dashed #b9c0c7; border-radius: 8px; font-size: 10pt; color: #5b6b7b; }
 .jump { position: sticky; top: 0; z-index: 20; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 8px 0; margin: -8px 0 0; background: var(--surface); border-bottom: 1px solid var(--line); }
 .jump::-webkit-scrollbar { display: none; }
 .jump button { flex: none; font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
@@ -1004,8 +1025,11 @@ function lesson(id) {
     return `<li class="u-prev">${unitThumb(x)}<a class="q" href="#${uid}"><b>${esc(x.title)}</b>${minChip(x)}</a>${x.hook ? `<span class="u-hook">${esc(x.hook)}</span>` : ""}${d.lead ? `<span class="qa">${esc(d.lead)}</span>` : ""}${d.q ? `<span class="u-q"><b>核心問題</b>${esc(d.q)}</span>` : ""}${tk.length ? `<span class="u-tk"><b>讀完你會知道</b><ul>${tk.map(t => `<li>${esc(t)}</li>`).join("")}</ul></span>` : ""}</li>`; }).join("")}</ol>` : "";
   const editBtn = state.isOwner && !u.locked ? `<button class="btn" type="button" id="edit">編輯這個單元</button>` : "";
   const rail = `${n ? `<div class="rail-box">${lessonNav(s, id)}</div>` : ""}<div class="rail-box"><h3>本頁小節</h3><ol class="toc" id="rail-toc"></ol></div>`;
+  if (READER) document.body.classList.add("printable");
+  const today = new Date(), pd = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`;
   app.innerHTML = `${crumbs}${readingLayout(`
     <article class="sheet lesson">
+      <div class="print-only print-meta">Cataract &amp; IOL Insight｜學習專區・本站整理｜作者 Posen Wang｜列印日期 ${pd}<br>線上版：${esc(READER_URL)}#${esc(id)}</div>
       <div class="sheet-head">
         <div class="tags" style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip learn">學習專區</span><span class="chip">本站整理</span>${n ? `<span class="chip">單元 ${n} / ${N}</span><span class="chip">約 ${readMin(u)} 分鐘</span>` : `<span class="chip">系列總覽</span>`}</div>
         ${n ? `<div class="ls-series"><a href="#${s.units[0]}">${esc(s.title)}</a></div>` : ""}
@@ -1022,6 +1046,7 @@ function lesson(id) {
         ${u.recap ? `<section class="ls-recap"><h3>重點回顧</h3>${keyText(u.recap)}</section>` : ""}
         ${keyText(u.outro)}
         ${(u.refs || []).length ? `<section class="ls-refs"><h3>參考文獻</h3><ol>${u.refs.map(refHtml).join("")}</ol></section>` : ""}
+        <div class="print-only print-end">本單元由 Posen Wang 整理，為個人非營利學習用途，歡迎列印供個人研讀與教學討論，請保留出處。本站繪製的圖表依各圖標示的文獻整理；引用自原始文獻或外部來源的圖片未收錄於列印版，請依出處查閱。內容會持續更新，請以線上最新版為準：${esc(READER_URL)}#${esc(id)}</div>
         ${n ? `<nav class="ls-pager">${prev ? `<a class="btn" href="#${prev}">← 上一單元</a>` : `<a class="btn" href="#${s.units[0]}">← 系列總覽</a>`}${next ? `<a class="btn primary" href="#${next}">下一單元 →</a>` : `<a class="btn" href="#c${c.id}-${s.sub}">回到 ${esc(c.zh)} →</a>`}</nav>`
           : `<nav class="ls-pager"><span></span>${s.units[1] ? `<a class="btn primary" href="#${s.units[1]}">從單元 1 開始 →</a>` : ""}</nav>`}
       </div>
@@ -1171,7 +1196,8 @@ function inlineFig(title) {
   const fg = (state.noteFigs || []).find(f => (f.kind === "image" || f.kind === "table") && (f.title || "").trim() === title);
   if (!fg) return state.isOwner ? `<p class="nmiss">找不到標題為「${esc(title)}」的圖片：請先在下方新增圖片，標題需完全相同。</p>` : "";
   const src = imgSrc(fg), kind = fg.origin === "site" ? "本站整理" : fg.origin === "ext" ? "外部資料" : "原文圖片";
-  return `<figure class="nfig${fg.kind === "table" ? " ntbl" : ""}">${fg.kind === "table" ? tableFig(fg) : fg.imgMissing || !src ? `<p class="fig-ref">圖片暫時無法顯示。</p>` : `<button class="fig-zoom" type="button" data-zoom="${esc(src)}" aria-label="放大圖片"><img src="${esc(src)}" alt="${esc(fg.alt || fg.title || "")}" loading="lazy"></button>`}
+  const orig = (fg.kind === "image" && fg.origin !== "site");
+  return `<figure class="nfig${fg.kind === "table" ? " ntbl" : ""}${orig ? " orig-img" : ""}">${orig ? `<p class="print-only print-orig">此圖引用自外部來源，未收錄於列印版，請見下方資料來源。</p>` : ""}${fg.kind === "table" ? tableFig(fg) : fg.imgMissing || !src ? `<p class="fig-ref">圖片暫時無法顯示。</p>` : `<button class="fig-zoom" type="button" data-zoom="${esc(src)}" aria-label="放大圖片"><img src="${esc(src)}" alt="${esc(fg.alt || fg.title || "")}" loading="lazy"></button>`}
     <figcaption><b>${esc(fg.title)}</b><span class="fig-kind${fg.origin === "site" ? " site" : fg.origin === "ext" ? " ext" : ""}">${kind}</span>${fg.caption ? `<span class="nfc">${esc(fg.caption)}</span>` : ""}${fg.source || fg.url ? `<span class="nfs">資料來源：${esc(fg.source || "")}${figLink(fg)}</span>` : ""}</figcaption></figure>`;
 }
 function noteHtml(src) {
@@ -1253,9 +1279,10 @@ function figHtml(fg, idx, own, move, bkey) {
     : fg.kind === "image" && fg.imgMissing ? `<p class="fig-ref">此為原文圖片，請見原文${state.figOrigin ? `（<a href="${esc(state.figOrigin)}" target="_blank" rel="noopener">查看原文</a>）` : ""}。</p>`
     : fg.kind === "image" && imgSrc(fg) ? `<button class="fig-zoom" type="button" data-zoom="${esc(imgSrc(fg))}" aria-label="放大圖片"><img src="${esc(imgSrc(fg))}" alt="${esc(fg.alt || fg.title || "")}" loading="lazy"></button><p class="fig-note">點圖片可放大</p>` : "";
   if (!body) return "";
-  return `<figure class="fig" style="margin:0">
+  const orig = (fg.kind === "image" && fg.origin !== "site");
+  return `<figure class="fig${orig ? " orig-img" : ""}" style="margin:0">
     <div class="fig-head"><h5>${esc(fg.title || "")}</h5><span class="fig-kind${fg.origin === "site" ? " site" : fg.origin === "ext" ? " ext" : ""}">${fg.origin === "site" ? "本站整理" : fg.origin === "ext" ? "外部資料" : FIG_KIND[fg.kind] || ""}</span></div>
-    ${body}
+    ${orig ? `<p class="print-only print-orig">此圖引用自外部來源，未收錄於列印版，請見下方資料來源。</p>` : ""}${body}
     ${fg.caption ? `<p class="fig-cap">${esc(fg.caption)}</p>` : ""}
     ${fg.source || fg.url ? `<p class="fig-src${fg.kind === "image" ? " img-src" : ""}">資料來源：${esc(fg.source || "")}${figLink(fg)}</p>` : ""}
     ${move || own || bkey ? `<div class="fig-tools">${move?.up ? `<button class="btn" type="button" data-figmove="${move.pos}" data-dir="-1" aria-label="往上移">↑ 上移</button>` : ""}${move?.down ? `<button class="btn" type="button" data-figmove="${move.pos}" data-dir="1" aria-label="往下移">↓ 下移</button>` : ""}${own ? `<button class="btn" type="button" data-figedit="${idx}">編輯</button><button class="btn ghost-danger" type="button" data-figdel="${idx}">刪除</button>` : ""}${bkey ? `<button class="btn" type="button" data-figbedit="${bkey}">編輯文字與數據</button>` : ""}</div>` : ""}
@@ -1629,6 +1656,7 @@ function about() {
 }
 function route() {
   const h = location.hash.slice(1) || "home";
+  document.body.classList.remove("printable");
   if (h !== state.editing) state.editing = null;
   if (h !== state.addingFig) { state.addingFig = null; state.figEdit = null; }
   if (h !== state.unlocking) state.unlocking = null;
@@ -1645,6 +1673,7 @@ function route() {
   return home();
 }
 window.addEventListener("hashchange", () => { window.scrollTo(0, 0); route(); });
+window.addEventListener("beforeprint", () => { if (document.body.classList.contains("printable")) app.querySelectorAll("details").forEach(d => { d.open = true; }); });
 q2.addEventListener("input", () => { state.query = q2.value; if (q2.value.trim()) { if (location.hash !== "#search") location.hash = "#search"; else search(q2.value.trim()); } });
 document.addEventListener("input", e => { if (e.target.id === "q" && location.hash === "#search") search(state.query.trim()); });
 route();
