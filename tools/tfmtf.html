@@ -91,7 +91,7 @@ a{color:var(--teal)}
       <div class="card">
         <div class="row2"><h2>Through-focus MTF（模擬光學台條件）</h2>
           <div><button class="btn" type="button" id="pin">固定這條曲線來比較</button> <button class="btn" type="button" id="unpin" hidden>清除比較</button></div></div>
-        <div class="legend"><span><i style="border-color:var(--teal)"></i>目前設定</span><span><i style="border-color:var(--ref);border-top-style:dashed"></i>同瞳孔的無像差單焦</span><span id="lg-pin" hidden><i style="border-color:var(--orange)"></i><span id="pin-name">固定的曲線</span></span></div>
+        <div class="legend"><span><i style="border-color:var(--orange)"></i>目前設定</span><span><i style="border-color:var(--ref);border-top-style:dashed"></i>同瞳孔的無像差單焦</span><span id="lg-pin" hidden><i style="border-color:var(--teal)"></i><span id="pin-name">固定的曲線</span></span></div>
         <p class="muted" style="margin:0 0 6px">依模型眼在光學台上的量測條件計算，代表鏡片本身的光學品質，不是植入眼內後的實際視力。</p>
         <div class="fig" id="fig1"><svg id="s1" role="img" aria-label="離焦 MTF 曲線"></svg><div class="tip" id="tip"></div></div>
         <div class="stats">
@@ -199,8 +199,8 @@ function draw1() {
   g += `<text x="${L}" y="${H0 - 4}" font-size="12" fill="var(--sub)">← 看遠</text><text x="${L + w}" y="${H0 - 4}" text-anchor="end" font-size="12" fill="var(--sub)">看近 →　離焦（IOL 平面，D）</text>`;
   const path = c => c.map((m, i) => `${i ? "L" : "M"}${X(VS[i]).toFixed(1)},${Y(Math.min(m, 1)).toFixed(1)}`).join("");
   g += `<path d="${path(ref)}" fill="none" stroke="var(--ref)" stroke-width="1.6" stroke-dasharray="5 4"/>`;
-  if (st.pin) g += `<path d="${path(st.pin.c)}" fill="none" stroke="var(--orange)" stroke-width="2"/>`;
-  g += `<path d="${path(cur)}" fill="none" stroke="var(--teal)" stroke-width="2.4" stroke-linejoin="round"/>`;
+  if (st.pin) g += `<path d="${path(st.pin.c)}" fill="none" stroke="var(--teal)" stroke-width="2"/>`;
+  g += `<path d="${path(cur)}" fill="none" stroke="var(--orange)" stroke-width="2.4" stroke-linejoin="round"/>`;
   g += `<line id="cx" y1="${T}" y2="${T + h}" stroke="var(--sub)" stroke-width="1" opacity="0"/><rect id="hit" x="${L}" y="${T}" width="${w}" height="${h}" fill="transparent"/>`;
   s.innerHTML = g;
   const tip = $("tip"), cx = s.querySelector("#cx");
