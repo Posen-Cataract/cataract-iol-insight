@@ -91,14 +91,14 @@ a{color:var(--teal)}
       <div class="card">
         <div class="row2"><h2>Through-focus MTF（模擬光學台條件）</h2>
           <div><button class="btn" type="button" id="pin">固定這條曲線來比較</button> <button class="btn" type="button" id="unpin" hidden>清除比較</button></div></div>
-        <div class="legend"><span><i style="border-color:var(--orange)"></i>目前設定</span><span><i style="border-color:var(--ref);border-top-style:dashed"></i>同瞳孔的無像差單焦</span><span id="lg-pin" hidden><i style="border-color:var(--teal)"></i><span id="pin-name">固定的曲線</span></span></div>
+        <div class="legend"><span><i style="border-color:var(--teal)"></i>目前設定</span><span><i style="border-color:var(--ref);border-top-style:dashed"></i>同瞳孔的無像差單焦</span><span id="lg-pin" hidden><i style="border-color:var(--orange)"></i><span id="pin-name">固定的曲線</span></span></div>
         <p class="muted" style="margin:0 0 6px">依模型眼在光學台上的量測條件計算，代表鏡片本身的光學品質，不是植入眼內後的實際視力。</p>
         <div class="fig" id="fig1"><svg id="s1" role="img" aria-label="離焦 MTF 曲線"></svg><div class="tip" id="tip"></div></div>
         <div class="stats">
           <div class="stat"><b id="st-far"></b><span>看遠的 MTF（0D）</span></div>
           <div class="stat"><b id="st-mid"></b><span>中距離的 MTF（+1.75D，約 80cm）</span></div>
           <div class="stat"><b id="st-near"></b><span>近距離的 MTF（+3.5D，約 40cm）</span></div>
-          <div class="stat"><b id="st-area"></b><span>離焦曲線下的總面積（相對單焦；不是文獻中的 MTFa）</span></div>
+          <div class="stat"><b id="st-area"></b><span>曲線下面積，相對無像差單焦</span></div>
         </div>
       </div>
       <div class="card">
@@ -119,11 +119,11 @@ a{color:var(--teal)}
   <div class="notes">
     <div class="card"><h2>模型說明與限制</h2>
       <ul class="muted" style="margin:4px 0 0;padding-left:1.2em;font-size:14px">
-        <li>計算方式：MTF 由瞳孔函數自相關計算，以 510–600nm 五個波長依明視覺敏感度加權平均，並納入簡化的縱向色差。條件相當於「多色光、無球差的角膜模型」；文獻顯示改用單色光或加入角膜球差，曲線形狀都會明顯不同。</li>
+        <li>計算方式：MTF 由瞳孔函數自相關計算，以 510–600nm 五個波長依明視覺敏感度加權平均，並納入簡化的縱向色差。</li>
         <li>座標：依光學台慣例，離焦以 IOL 平面的度數表示，往右為看近；瞳孔大小換算成 IOL 平面的孔徑（約為瞳孔的 0.86 倍，L02-3）。</li>
         <li>假設：角膜與鏡片的球差已互相抵消；未包含散射、鏡片偏心與傾斜。</li>
         <li>延長焦深：以中央區一圈度數較高的環示意，形狀參考已發表的折射型 EDOF 實測分布；屈光力圖中非球面單焦的度數下降幅度為示意。</li>
-        <li>三焦點：以平滑的繞射相位示意，遠、中、近的分光約 38%、20%、27%，其餘約 15% 散到其他繞射階次；換算成三個焦點合計 100%，約為 45%、24%、31%，與廠商常見的標示方式相近。瞳孔反應圖的光能比例，依繞射區與外圍折射區在瞳孔內所占的面積計算。真實鏡片還有 apodization、外圍改為雙焦等做法，大瞳孔時可能偏向中距離或近距離，不一定是看遠增強（Łabuz 等人，J Clin Med 2023）。</li>
+        <li>三焦點：以平滑的繞射相位示意，遠、中、近的分光約 38%、20%、27%；瞳孔反應圖的光能比例，依繞射區與外圍折射區在瞳孔內所占的面積計算。</li>
         <li>本工具只用來理解光學原理，不代表任何真實鏡片的設計或表現，也不能用來比較產品。</li>
       </ul>
       <p class="muted">Cataract &amp; IOL Insight・Posen Wang 製作・<a href="https://posen-cataract.github.io/cataract-iol-insight/">回到 Cataract &amp; IOL Insight</a></p></div>
@@ -199,8 +199,8 @@ function draw1() {
   g += `<text x="${L}" y="${H0 - 4}" font-size="12" fill="var(--sub)">← 看遠</text><text x="${L + w}" y="${H0 - 4}" text-anchor="end" font-size="12" fill="var(--sub)">看近 →　離焦（IOL 平面，D）</text>`;
   const path = c => c.map((m, i) => `${i ? "L" : "M"}${X(VS[i]).toFixed(1)},${Y(Math.min(m, 1)).toFixed(1)}`).join("");
   g += `<path d="${path(ref)}" fill="none" stroke="var(--ref)" stroke-width="1.6" stroke-dasharray="5 4"/>`;
-  if (st.pin) g += `<path d="${path(st.pin.c)}" fill="none" stroke="var(--teal)" stroke-width="2"/>`;
-  g += `<path d="${path(cur)}" fill="none" stroke="var(--orange)" stroke-width="2.4" stroke-linejoin="round"/>`;
+  if (st.pin) g += `<path d="${path(st.pin.c)}" fill="none" stroke="var(--orange)" stroke-width="2"/>`;
+  g += `<path d="${path(cur)}" fill="none" stroke="var(--teal)" stroke-width="2.4" stroke-linejoin="round"/>`;
   g += `<line id="cx" y1="${T}" y2="${T + h}" stroke="var(--sub)" stroke-width="1" opacity="0"/><rect id="hit" x="${L}" y="${T}" width="${w}" height="${h}" fill="transparent"/>`;
   s.innerHTML = g;
   const tip = $("tip"), cx = s.querySelector("#cx");
@@ -291,8 +291,8 @@ function draw3() {
   g += `<path d="${path(pr, 3)}" fill="none" stroke="var(--ref)" stroke-width="1.6" stroke-dasharray="1 4" stroke-linecap="round"/>`;
   for (let k = 0; k < 3; k++) g += `<path d="${path(pr, k)}" fill="none" stroke="${cols[k]}" stroke-width="2.4" stroke-linejoin="round"/>`;
   s.innerHTML = g;
-  $("pr-note").textContent = st.dz < 5.9 ? "虛線是瞳孔（換算成 IOL 平面）剛好等於繞射區的位置：瞳孔小於繞射區時，光能分配固定；超過之後，外圍折射區的光全部聚焦在看遠，看遠的光能從這裡開始上升，中、近距離與光暈來源則跟著下降。這裡只示範「繞射區外改為單焦」這一種做法，其他設計的瞳孔反應可能不同。"
-    : "繞射區涵蓋整個光學區時，不論瞳孔多大，遠、中、近的光能比例都固定（約 38%、20%、27%，其餘約 15% 散到其他繞射階次）。把繞射區直徑調小看看差別。這裡只示範「繞射區外改為單焦」這一種做法，其他設計的瞳孔反應可能不同。";
+  $("pr-note").textContent = st.dz < 5.9 ? "虛線是瞳孔（換算成 IOL 平面）剛好等於繞射區的位置：瞳孔小於繞射區時，光能分配固定；超過之後，外圍折射區的光全部聚焦在看遠，看遠的光能從這裡開始上升，中、近距離與光暈來源則跟著下降。"
+    : "繞射區涵蓋整個光學區時，不論瞳孔多大，遠、中、近的光能比例都固定（約 38%、20%、27%，其餘約 15% 散到其他繞射階次）。把繞射區直徑調小看看差別。";
 }
 let tmr = 0, refKey = "";
 function update() { sync(); clearTimeout(tmr); tmr = setTimeout(() => {

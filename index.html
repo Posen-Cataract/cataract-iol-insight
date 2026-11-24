@@ -655,13 +655,12 @@ function home() {
       <span class="study-meta">已開放 ${open.length} 個單元・共約 ${mins} 分鐘<b>開始閱讀 →</b></span></div></a>`;
   }).join("");
   // Study tool card: quick entry to the defocus-curve simulator, with one link per design.
-  const toolUnits = us.filter(u => u.tool && !lessonLocked(u)).map(u => u.id);
   const TOOL_URL = READER_URL + "tools/tfmtf.html";
   const toolCard = `<div class="study tool-study"><span class="study-ico">${ICO(`<path d="M3 26h26M5 26V6"/><path d="M6 22c4 0 5-14 9-14s5 14 9 14" stroke-width="2.2"/><circle cx="15" cy="8" r="1.6" fill="currentColor"/>`)}</span>
       <div class="study-body"><small>學習工具・互動模擬</small><h3><a href="${esc(TOOL_URL)}" target="_blank" rel="noopener">離焦曲線模擬器</a></h3>
       <p>調整設計與瞳孔，看單焦、延焦、三焦點的 Through-focus MTF 曲線怎麼變。</p>
       <div class="tool-chips">${[["mono", "單焦"], ["edof", "延長焦深"], ["tri", "三焦點"]].map(([k, t]) => `<a href="${esc(TOOL_URL)}#${k}" target="_blank" rel="noopener">${t}</a>`).join("")}</div>
-      ${toolUnits.length ? `<span class="study-meta">搭配 ${toolUnits.join("、")} 使用<b><a href="${esc(TOOL_URL)}" target="_blank" rel="noopener">開啟模擬器 →</a></b></span>` : ""}</div></div>`;
+      <span class="study-meta">建議搭配基礎學習單元一同使用<b><a href="${esc(TOOL_URL)}" target="_blank" rel="noopener">開啟模擬器 →</a></b></span></div></div>`;
   app.innerHTML = `
     ${study ? `<section class="study-zone"><div class="sec-head"><h2>學習專區</h2><span>本站整理的基礎觀念單元，從問題出發</span></div><div class="studies">${study}${toolCard}</div></section>` : ""}
     <section style="display:grid;gap:14px">
